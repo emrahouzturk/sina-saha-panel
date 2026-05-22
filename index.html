@@ -851,12 +851,26 @@ function setConnStatus(online) {
   }
 }
 
+// Firebase'den gelen store objesinde eksik alan olabilir — hepsini garantiye al
+function normalizeStore(s) {
+  return {
+    ...s,
+    contacts:     Array.isArray(s.contacts)     ? s.contacts     : [],
+    visits:       Array.isArray(s.visits)        ? s.visits       : [],
+    ciro:         Array.isArray(s.ciro)          ? s.ciro         : [],
+    transactions: Array.isArray(s.transactions)  ? s.transactions : [],
+    notes:        s.notes    || '',
+    mapLink:      s.mapLink  || '',
+    district:     s.district || '',
+  };
+}
+
 // Firebase'den gerçek zamanlı dinle
 DATA_REF.on('value', (snapshot) => {
   const data = snapshot.val();
   setConnStatus(true);
   if (data && Array.isArray(data.stores)) {
-    stores = data.stores;
+    stores = data.stores.map(normalizeStore);
     nextId = data.nextId || (stores.length ? Math.max(...stores.map(s=>s.id)) + 1 : 1);
   } else {
     stores = [];
@@ -1874,7 +1888,7 @@ function resetAll() {
   render();
 }
 
-render();
+// İlk render Firebase onValue callback'i gelince yapılır — burada çağrılmaz
 </script>
 </body>
 </html>
