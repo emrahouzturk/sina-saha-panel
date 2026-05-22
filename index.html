@@ -6,6 +6,8 @@
 <title>Bölge Müdürü — Saha Paneli · Sina Pırlanta</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -717,7 +719,7 @@ select option{background:var(--surface)}
   </div>
 </div>
 
-<script type="module">
+<script>
 const MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 
 // ── TÜRKİYE İL / İLÇE VERİSİ ─────────────────────────────────────────────────
@@ -821,9 +823,6 @@ function updateDistricts(selectedDistrict) {
 }
 
 // ── FIREBASE ──────────────────────────────────────────────────────────────────
-import { initializeApp }                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, onValue, goOnline, goOffline } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
 const firebaseConfig = {
   apiKey:            "AIzaSyBQV61DA7zQK85L_bPuvVwEvFdwkT3O2W4",
   authDomain:        "sina-pirlanta-saha-otomasyon.firebaseapp.com",
@@ -834,11 +833,11 @@ const firebaseConfig = {
   appId:             "1:795443615025:web:99ab703700d26f3f714c10"
 };
 
-const fbApp = initializeApp(firebaseConfig);
-const db    = getDatabase(fbApp);
-const DATA_REF = ref(db, 'panel');
+firebase.initializeApp(firebaseConfig);
+const db       = firebase.database();
+const DATA_REF = db.ref('panel');
 
-let _fbReady = false; // ilk yük tamamlandı mı?
+let _fbReady = false;
 
 function setConnStatus(online) {
   const el = document.getElementById('connStatus');
@@ -853,7 +852,7 @@ function setConnStatus(online) {
 }
 
 // Firebase'den gerçek zamanlı dinle
-onValue(DATA_REF, (snapshot) => {
+DATA_REF.on('value', (snapshot) => {
   const data = snapshot.val();
   setConnStatus(true);
   if (data && Array.isArray(data.stores)) {
@@ -871,15 +870,20 @@ onValue(DATA_REF, (snapshot) => {
 }, (error) => {
   setConnStatus(false);
   console.error('Firebase okuma hatası:', error);
+  document.getElementById('loadingOverlay').innerHTML = `
+    <div style="font-family:'Poppins',sans-serif;text-align:center;padding:20px">
+      <div style="font-size:28px;margin-bottom:12px">⚠️</div>
+      <div style="font-size:14px;color:var(--red);margin-bottom:8px">Bağlantı hatası</div>
+      <div style="font-size:12px;color:var(--text3)">${error.message}</div>
+    </div>`;
 });
 
 // Bağlantı durumu takibi
-const connRef = ref(db, '.info/connected');
-onValue(connRef, (snap) => setConnStatus(snap.val() === true));
+db.ref('.info/connected').on('value', (snap) => setConnStatus(snap.val() === true));
 
 function saveData() {
-  if (!_fbReady) return; // ilk yük tamamlanmadan yazma
-  set(DATA_REF, { stores, nextId }).catch(err => {
+  if (!_fbReady) return;
+  DATA_REF.set({ stores, nextId }).catch(err => {
     console.error('Firebase yazma hatası:', err);
     setConnStatus(false);
   });
@@ -1871,20 +1875,6 @@ function resetAll() {
 }
 
 render();
-
-// ── type="module" ile inline onclick'ler için window'a aktar ──────────────────
-Object.assign(window, {
-  setPage, openDetail, closeDetail,
-  openAdd, closeModal,
-  openVisitModal, closeVisitModal,
-  openCiroModal, closeCiroModal,
-  openTxModal, closeTxModal,
-  openResetPanel, resetVisits, resetTransactions, resetCiro, resetAll,
-  editTx, deleteTx, editVisit, deleteVisit, deleteStore,
-  cycleSortBalance, cycleSortVisit,
-  toggleCity, updateDistricts,
-  setView, filterType, toggleFilter
-});
 </script>
 </body>
 </html>
