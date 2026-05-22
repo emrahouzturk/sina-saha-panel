@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bölge Müdürü — Saha Paneli · Sina Pırlanta</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fdf8f5;
+  --surface:#ffffff;
+  --surface2:#faf4f0;
+  --surface3:#f5ece6;
+  --border:#e8d8d0;
+  --border2:#d4b8ac;
+  --text:#2a1f1a;
+  --text2:#7a5f56;
+  --text3:#b09388;
+  --accent:#c4748a;
+  --accent2:#a85c73;
+  --accent-pale:#c4748a18;
+  --gold:#b8936a;
+  --green:#4a9e7a;
+  --green-pale:#4a9e7a15;
+  --red:#c44a4a;
+  --red-pale:#c44a4a12;
+  --blue:#5a82b4;
+  --blue-pale:#5a82b415;
+  --orange:#c47840;
+  --sidebar:268px;
+  --r:8px;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Poppins',sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.layout{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
+
+.sb-brand{padding:24px 22px 18px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.sb-logo-img{height:28px;object-fit:contain;opacity:.92}
+.sb-role{font-size:9px;color:var(--text3);letter-spacing:.18em;text-transform:uppercase;margin-top:2px}
+
+.sb-nav{padding:14px 10px;flex:1}
+.nav-group{margin-bottom:4px}
+.nav-label{font-size:8px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--text3);padding:12px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:6px;
+  cursor:pointer;transition:background .15s,color .15s;color:var(--text2);font-size:12.5px;user-select:none}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--accent-pale);color:var(--accent)}
+.nav-item svg{flex-shrink:0;opacity:.7}
+.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:9px;font-weight:500;
+  padding:1px 7px;border-radius:20px;}
+
+.type-pills{display:flex;flex-direction:column;gap:3px;padding:0 10px}
+.type-pill{display:flex;align-items:center;gap:9px;padding:7px 12px;border-radius:6px;
+  cursor:pointer;font-size:12.5px;color:var(--text2);transition:background .15s,color .15s;user-select:none}
+.type-pill:hover{background:var(--surface2)}
+.type-pill.active{background:var(--surface3);color:var(--text)}
+.pill-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+.sb-footer{padding:14px 22px;border-top:1px solid var(--border)}
+.sb-user{font-size:10px;color:var(--text3)}
+.sb-username{font-size:12px;color:var(--text2);margin-top:2px}
+
+/* MAIN */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.topbar{padding:18px 32px;display:flex;align-items:center;gap:14px;
+  border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:50}
+.topbar-title{font-family:'Poppins',sans-serif;font-weight:600;font-size:22px;color:var(--text);letter-spacing:.01em}
+.topbar-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.topbar-right{margin-left:auto;display:flex;gap:9px;align-items:center}
+
+.search-wrap{position:relative}
+.search-input{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);
+  padding:7px 11px 7px 32px;font-family:'Poppins',sans-serif;font-size:12.5px;font-weight:300;
+  color:var(--text);outline:none;width:210px;transition:border-color .18s,width .25s}
+.search-input::placeholder{color:var(--text3)}
+.search-input:focus{border-color:var(--accent);width:250px}
+.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:var(--r);
+  border:none;cursor:pointer;font-family:'Poppins',sans-serif;font-size:12px;font-weight:400;
+  letter-spacing:.03em;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2)}
+.btn-ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+
+.content{flex:1;padding:26px 32px;overflow-y:auto}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;transition:border-color .18s}
+.stat-card:hover{border-color:var(--border2)}
+.stat-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.stat-val{font-family:'Poppins',sans-serif;font-size:28px;font-weight:600;color:var(--text);line-height:1}
+.stat-sub{font-size:10px;color:var(--text3);margin-top:4px}
+.stat-accent{color:var(--accent)}
+.stat-green{color:var(--green)}
+.stat-red{color:var(--red)}
+
+/* store grid now defined in city accordion section */
+
+.store-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:18px;cursor:pointer;transition:border-color .18s,box-shadow .18s;position:relative;overflow:hidden}
+.store-card:hover{border-color:var(--border2);box-shadow:0 4px 16px rgba(180,100,110,.07)}
+.store-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--r) var(--r) 0 0}
+.store-card.magaza::before{background:linear-gradient(90deg,var(--accent),var(--gold))}
+.store-card.satis-noktasi::before{background:linear-gradient(90deg,var(--blue),var(--accent))}
+
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.card-name{font-family:'Poppins',sans-serif;font-size:15px;font-weight:600;color:var(--text);line-height:1.3}
+.card-city{font-size:11px;color:var(--text3);margin-top:2px}
+.type-tag{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 8px;border-radius:20px;flex-shrink:0}
+.tag-magaza{background:var(--accent-pale);color:var(--accent)}
+.tag-satis{background:var(--blue-pale);color:var(--blue)}
+
+.card-meta{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+.meta-item{background:var(--surface2);border-radius:5px;padding:8px 10px}
+.meta-label{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.meta-val{font-size:12.5px;color:var(--text);font-weight:400}
+.meta-val.positive{color:var(--green)}
+.meta-val.negative{color:var(--red)}
+.meta-val.warn{color:var(--orange)}
+
+.card-visit{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);padding-top:9px;border-top:1px solid var(--border)}
+.visit-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-green{background:var(--green)}
+.dot-orange{background:var(--orange)}
+.dot-red{background:var(--red)}
+.visit-date{color:var(--text2)}
+
+.card-actions{display:flex;gap:5px;margin-top:10px}
+.card-btn{flex:1;padding:6px;border-radius:5px;border:1px solid var(--border);background:none;
+  font-family:'Poppins',sans-serif;font-size:10.5px;color:var(--text2);cursor:pointer;
+  transition:all .15s;display:flex;align-items:center;justify-content:center;gap:4px}
+.card-btn:hover{border-color:var(--border2);color:var(--text);background:var(--surface3)}
+.card-btn.visit-btn:hover{border-color:var(--green);color:var(--green);background:var(--green-pale)}
+.card-btn.map-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+
+/* DETAIL PANEL */
+.detail-overlay{position:fixed;inset:0;background:rgba(42,31,26,.45);z-index:400;display:flex;
+  align-items:stretch;justify-content:flex-end;animation:fadeIn .2s ease both}
+.detail-panel{width:540px;max-width:100vw;background:var(--surface);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;animation:slideLeft .25s ease both;overflow:hidden}
+.dp-header{padding:22px 26px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px}
+.dp-type-bar{width:3px;border-radius:2px;align-self:stretch;flex-shrink:0;margin-top:2px}
+.dp-name{font-family:'Poppins',sans-serif;font-size:19px;font-weight:600;color:var(--text)}
+.dp-city{font-size:12px;color:var(--text3);margin-top:3px}
+.dp-close{margin-left:auto;background:none;border:1px solid var(--border);color:var(--text3);
+  width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:18px;line-height:1;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.dp-close:hover{border-color:var(--border2);color:var(--text)}
+
+.dp-body{flex:1;overflow-y:auto;padding:22px 26px;display:flex;flex-direction:column;gap:20px}
+
+.dp-section-title{font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--text3);
+  margin-bottom:11px;padding-bottom:7px;border-bottom:1px solid var(--border)}
+
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.info-item{background:var(--surface2);border-radius:6px;padding:11px 13px}
+.info-item.full{grid-column:1/-1}
+.info-label{font-size:8px;letter-spacing:.13em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.info-val{font-size:12.5px;color:var(--text);line-height:1.5}
+.info-val a{color:var(--blue);text-decoration:none}
+.info-val a:hover{text-decoration:underline}
+.info-val.mono{font-family:'Poppins',sans-serif;font-size:17px;font-weight:600}
+.info-val.positive{color:var(--green)}
+.info-val.negative{color:var(--red)}
+
+/* yetkili listesi */
+.contacts-list{display:flex;flex-direction:column;gap:7px}
+.contact-item{display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:6px;padding:10px 13px}
+.contact-avatar{width:30px;height:30px;border-radius:50%;background:var(--accent-pale);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;color:var(--accent);flex-shrink:0}
+.contact-info{flex:1;min-width:0}
+.contact-name{font-size:12.5px;color:var(--text);line-height:1.2}
+.contact-role{font-size:10px;color:var(--text3);margin-top:1px}
+.contact-links{display:flex;gap:6px;margin-top:3px;flex-wrap:wrap}
+.contact-link{font-size:10px;color:var(--blue);text-decoration:none}
+.contact-link:hover{text-decoration:underline}
+
+/* transactions */
+.tx-table{width:100%;border-collapse:collapse}
+.tx-table th{font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);
+  padding:0 9px 7px;text-align:left}
+.tx-table th:last-child{text-align:right}
+.tx-table td{padding:8px 9px;font-size:12px;color:var(--text2);border-top:1px solid var(--border)}
+.tx-table td:last-child{text-align:right;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:var(--text)}
+.tx-type{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:400}
+.tx-sale{background:var(--blue-pale);color:var(--blue)}
+.tx-payment{background:var(--green-pale);color:var(--green)}
+.tx-amount-pos{color:var(--green)!important}
+.tx-amount-neg{color:var(--red)!important}
+
+/* ciro table */
+.ciro-table{width:100%;border-collapse:collapse}
+.ciro-table th{font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);
+  padding:0 9px 7px;text-align:left}
+.ciro-table th:last-child,.ciro-table th:nth-child(2){text-align:right}
+.ciro-table td{padding:8px 9px;font-size:12px;color:var(--text2);border-top:1px solid var(--border)}
+.ciro-table td:last-child{text-align:right;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:var(--text)}
+.ciro-table td:nth-child(2){text-align:right}
+.ciro-bar{height:2px;background:var(--surface3);border-radius:2px;margin-top:3px;overflow:hidden}
+.ciro-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .5s ease}
+
+/* visit log */
+.visit-log{display:flex;flex-direction:column;gap:7px}
+.visit-entry{display:flex;gap:11px;align-items:flex-start;padding:9px 11px;
+  background:var(--surface2);border-radius:6px}
+.visit-date-col{font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;color:var(--accent);
+  white-space:nowrap;min-width:80px}
+.visit-note-col{font-size:11.5px;color:var(--text2);line-height:1.5}
+
+.note-box{background:var(--surface2);border:1px solid var(--border);border-radius:6px;
+  padding:12px;font-size:12.5px;color:var(--text2);line-height:1.6;white-space:pre-wrap}
+.note-box:empty::before{content:'Henüz not yok.';color:var(--text3);font-style:italic}
+
+.dp-footer{padding:16px 26px;border-top:1px solid var(--border);display:flex;gap:9px;flex-wrap:wrap}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(42,31,26,.45);z-index:600;
+  display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .18s ease both}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  width:100%;max-width:580px;animation:slideUp .22s ease both;overflow:hidden;display:flex;flex-direction:column}
+.modal-lg{max-width:680px}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:'Poppins',sans-serif;font-size:17px;font-weight:600;color:var(--text)}
+.modal-close{background:none;border:1px solid var(--border);color:var(--text3);
+  width:28px;height:28px;border-radius:5px;cursor:pointer;font-size:18px;line-height:1;
+  display:flex;align-items:center;justify-content:center;transition:all .15s}
+.modal-close:hover{border-color:var(--border2);color:var(--text)}
+.modal-body{padding:20px 24px;display:flex;flex-direction:column;gap:13px;overflow-y:auto;max-height:72vh}
+.modal-footer{padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:9px;justify-content:flex-end}
+
+.field{display:flex;flex-direction:column;gap:5px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
+.field-label{font-size:8px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--text3)}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:6px;
+  padding:8px 11px;font-family:'Poppins',sans-serif;font-size:12.5px;font-weight:300;color:var(--text);
+  outline:none;transition:border-color .16s;width:100%}
+textarea{resize:vertical;min-height:66px;line-height:1.5}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+select option{background:var(--surface)}
+.error-msg{font-size:11px;color:var(--red);display:none}
+.error-msg.show{display:block}
+
+/* contacts editor */
+.contacts-editor{display:flex;flex-direction:column;gap:8px}
+.contact-row{display:flex;align-items:flex-start;gap:8px;padding:10px;background:var(--surface2);border-radius:7px;border:1px solid var(--border)}
+.contact-row-fields{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.contact-row-bottom{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.remove-contact-btn{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;border-radius:4px;transition:color .15s;flex-shrink:0;margin-top:2px}
+.remove-contact-btn:hover{color:var(--red)}
+.add-contact-btn{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:6px;border:1px dashed var(--border2);
+  background:none;cursor:pointer;font-size:11.5px;color:var(--text3);transition:all .15s;font-family:'Poppins',sans-serif;width:100%;justify-content:center}
+.add-contact-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-pale)}
+
+.section-title-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-h{font-family:'Poppins',sans-serif;font-size:16px;font-weight:600;color:var(--text)}
+.section-count{font-size:11px;color:var(--text3)}
+
+.empty-state{text-align:center;padding:70px 20px;color:var(--text3)}
+.empty-icon{font-size:44px;margin-bottom:14px;opacity:.25}
+.empty-title{font-family:'Poppins',sans-serif;font-size:19px;font-weight:500;color:var(--text2);margin-bottom:5px}
+.empty-sub{font-size:12px}
+
+.mob-header{display:none;align-items:center;justify-content:space-between;
+  padding:13px 18px;background:var(--surface);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100}
+.hamburger{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:5px}
+.hamburger span{display:block;width:20px;height:1.5px;background:var(--text2)}
+.mob-backdrop{display:none;position:fixed;inset:0;background:rgba(42,31,26,.45);z-index:200}
+
+/* balance section */
+.balance-row{display:flex;gap:9px;align-items:stretch}
+.balance-main{flex:1}
+.balance-actions{display:flex;flex-direction:column;gap:5px;justify-content:center}
+
+@media(max-width:900px){
+  .mob-header{display:flex}
+  .layout{flex-direction:column}
+  .sidebar{position:fixed;left:-100%;top:0;height:100vh;z-index:300;transition:left .28s ease;width:280px}
+  .sidebar.open{left:0}
+  .mob-backdrop.open{display:block}
+  .topbar{padding:13px 18px}
+  .content{padding:18px}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .stores-grid{grid-template-columns:1fr}
+  .detail-panel{width:100vw}
+}
+
+/* CITY ACCORDION */
+.stores-grid{display:flex;flex-direction:column;gap:10px}
+.city-group{width:100%}
+.city-header{display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:13px 18px;cursor:pointer;user-select:none;transition:border-color .18s,background .15s;gap:10px}
+.city-header:hover{background:var(--surface2);border-color:var(--border2)}
+.city-header-left{display:flex;align-items:center;gap:9px;min-width:0}
+.city-chevron{flex-shrink:0;transition:transform .22s ease;color:var(--text3)}
+.city-chevron.open{transform:rotate(90deg)}
+.city-name{font-size:14px;font-weight:500;color:var(--text);letter-spacing:.01em}
+.city-total{font-size:11px;color:var(--text3);background:var(--surface3);padding:2px 8px;border-radius:20px;flex-shrink:0}
+.city-badges{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.city-badge{font-size:9px;font-weight:500;padding:2px 8px;border-radius:20px;letter-spacing:.04em;white-space:nowrap}
+.badge-magaza{background:var(--accent-pale);color:var(--accent)}
+.badge-satis{background:var(--blue-pale);color:var(--blue)}
+.badge-neg{background:var(--red-pale);color:var(--red)}
+.badge-overdue{background:#c4784018;color:var(--orange)}
+.city-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.city-body.open{max-height:9999px}
+.stores-inner-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;padding:14px 0 4px}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* LIST ROW */
+.store-list-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer;
+  transition:border-color .15s,box-shadow .15s;position:relative;overflow:hidden}
+.store-list-row:hover{border-color:var(--border2);box-shadow:0 2px 8px rgba(180,100,110,.06)}
+.store-list-row::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;border-radius:var(--r) 0 0 var(--r)}
+.store-list-row.magaza::before{background:linear-gradient(180deg,var(--accent),var(--gold))}
+.store-list-row.satis-noktasi::before{background:linear-gradient(180deg,var(--blue),var(--accent))}
+.slr-name{font-size:13px;font-weight:500;color:var(--text);min-width:180px;flex:2}
+.slr-city{font-size:11.5px;color:var(--text3);min-width:100px;flex:1}
+.slr-contact{font-size:11.5px;color:var(--text2);flex:1.5;min-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slr-visit{font-size:11.5px;flex:1;min-width:90px;white-space:nowrap}
+.slr-balance{font-size:13px;font-weight:600;flex:1;min-width:90px;text-align:right;white-space:nowrap}
+.slr-type{flex-shrink:0}
+.slr-actions{display:flex;gap:4px;flex-shrink:0;opacity:0;transition:opacity .15s}
+.store-list-row:hover .slr-actions{opacity:1}
+.slr-btn{background:none;border:1px solid var(--border);border-radius:4px;padding:4px 8px;
+  font-family:'Poppins',sans-serif;font-size:10px;color:var(--text2);cursor:pointer;transition:all .12s;white-space:nowrap}
+.slr-btn:hover{border-color:var(--border2);color:var(--text);background:var(--surface2)}
+.slr-btn.green:hover{border-color:var(--green);color:var(--green);background:var(--green-pale)}
+.slr-btn.blue:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+.slr-btn.red:hover{border-color:var(--red);color:var(--red);background:var(--red-pale)}
+.slr-header{display:flex;align-items:center;gap:12px;padding:5px 16px;margin-bottom:4px}
+.slr-header span{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--text3)}
+
+/* PAGE TABLE (ziyaretler/bakiye) */
+.page-table{width:100%;border-collapse:collapse}
+.page-table th{font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);
+  padding:8px 12px;text-align:left;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0}
+.page-table td{padding:10px 12px;font-size:12.5px;color:var(--text2);border-bottom:1px solid var(--border);vertical-align:middle}
+.page-table tr:hover td{background:var(--surface2);cursor:pointer}
+.page-table tr:last-child td{border-bottom:none}
+.page-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+@keyframes slideLeft{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes slideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+</style>
+</head>
+<body>
+
+<div class="mob-header">
+  <div>
+    <img src="https://www.sinapirlanta.com/themes/custom/sina/logo.svg" style="height:22px;object-fit:contain" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <span style="display:none;font-family:'Poppins',sans-serif;font-weight:600;font-size:15px;color:var(--accent)">Sina Pırlanta</span>
+  </div>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</div>
+<div class="mob-backdrop" id="mobBackdrop"></div>
+
+<!-- YÜKLEME EKRANİ -->
+<div id="loadingOverlay" style="position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+  <img src="https://www.sinapirlanta.com/themes/custom/sina/logo.svg" style="height:36px;opacity:.8" onerror="this.style.display='none'">
+  <div style="font-family:'Poppins',sans-serif;font-size:13px;color:var(--text3)">Veriler yükleniyor…</div>
+  <div style="width:120px;height:2px;background:var(--border);border-radius:2px;overflow:hidden">
+    <div style="height:100%;background:var(--accent);border-radius:2px;animation:loadbar 1.2s ease-in-out infinite"></div>
+  </div>
+</div>
+<style>
+@keyframes loadbar{0%{width:0;margin-left:0}50%{width:80%;margin-left:10%}100%{width:0;margin-left:100%}}
+</style>
+
+<div class="layout">
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <img class="sb-logo-img" src="https://www.sinapirlanta.com/themes/custom/sina/logo.svg"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <span style="display:none;font-family:'Poppins',sans-serif;font-weight:600;font-size:16px;color:var(--accent)">Sina Pırlanta</span>
+    <div class="sb-role">Bölge Müdürü · Saha Paneli</div>
+  </div>
+  <div class="sb-nav">
+    <div class="nav-label">Sayfalar</div>
+    <div class="nav-item active" id="navNoktalar" onclick="setPage('noktalar')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Mağazalar ve Satış Noktaları
+      <span class="nav-badge" id="totalBadge">0</span>
+    </div>
+    <div class="nav-item" id="navZiyaretler" onclick="setPage('ziyaretler')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Ziyaretler
+    </div>
+    <div class="nav-item" id="navBakiye" onclick="setPage('bakiye')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/><circle cx="12" cy="12" r="10"/></svg>
+      Güncel Bakiye
+    </div>
+  </div>
+  <div class="sb-footer">
+    <div class="sb-user">Oturum açık</div>
+    <div class="sb-username" id="sbUsername">Bölge Müdürü</div>
+    <div id="connStatus" style="font-size:10px;margin-top:6px;color:var(--text3)">○ Bağlanıyor…</div>
+    <button onclick="openResetPanel()" style="margin-top:12px;width:100%;display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:6px;border:1px solid var(--border);background:none;cursor:pointer;font-family:'Poppins',sans-serif;font-size:11px;color:var(--text3);transition:all .15s" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text3)'">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+      Sıfırlama Paneli
+    </button>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="topbarTitle">Tüm Noktalar</div>
+      <div class="topbar-sub" id="topbarSub"></div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-wrap">
+        <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-input" type="text" id="searchInput" placeholder="Mağaza, şehir, yetkili…">
+      </div>
+      <button class="btn btn-ghost" id="excelBtn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Excel
+      </button>
+      <button class="btn btn-ghost" id="jsonExportBtn" title="JSON olarak kaydet">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        JSON
+      </button>
+      <label class="btn btn-ghost" id="jsonImportLabel" title="JSON yükle" style="cursor:pointer">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Yükle
+        <input type="file" id="jsonImportInput" accept=".json" style="display:none">
+      </label>
+      <button class="btn btn-primary" id="addBtn">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nokta Ekle
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="stats-row" id="statsRow"></div>
+
+    <!-- ══ SAYFA: NOKTALAR ══ -->
+    <div id="pageNoktalar">
+      <!-- Filtreler -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:7px;flex:1;min-width:200px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          <select id="cityFilter" style="max-width:220px;font-size:12.5px;padding:6px 10px" onchange="render()">
+            <option value="">— Tüm İller —</option>
+          </select>
+          <select id="typeFilter" style="max-width:200px;font-size:12.5px;padding:6px 10px" onchange="render()">
+            <option value="all">— Tüm Türler —</option>
+            <option value="magaza">Mağazalar</option>
+            <option value="satis-noktasi">Satış Noktaları</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <span style="font-size:11px;color:var(--text3)">Sırala:</span>
+          <button class="btn btn-ghost" id="sortBalanceBtn" onclick="cycleSortBalance()" style="font-size:11px;padding:5px 11px;display:flex;align-items:center;gap:5px">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="5 12 12 5 19 12"/></svg>
+            <span id="sortBalanceLabel">Güncel Bakiye</span>
+          </button>
+          <button class="btn btn-ghost" id="sortVisitBtn" onclick="cycleSortVisit()" style="font-size:11px;padding:5px 11px;display:flex;align-items:center;gap:5px">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span id="sortVisitLabel">Ziyaret Tarihi</span>
+          </button>
+        </div>
+      </div>
+      <div class="section-title-bar">
+        <div class="section-h" id="gridTitle">Noktalar</div>
+        <div class="section-count" id="gridCount"></div>
+      </div>
+      <div class="stores-grid" id="storesGrid"></div>
+    </div>
+
+    <!-- ══ SAYFA: ZİYARETLER ══ -->
+    <div id="pageZiyaretler" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        <select id="ziyaretCityFilter" style="max-width:220px;font-size:12.5px;padding:6px 10px" onchange="renderZiyaretler()">
+          <option value="">— Tüm İller —</option>
+        </select>
+        <select id="ziyaretDurumFilter" style="max-width:200px;font-size:12.5px;padding:6px 10px" onchange="renderZiyaretler()">
+          <option value="all">— Tüm Durumlar —</option>
+          <option value="red">60+ gün (Geciken)</option>
+          <option value="orange">31–60 gün</option>
+          <option value="green">0–30 gün</option>
+        </select>
+      </div>
+      <div class="section-title-bar">
+        <div class="section-h">Ziyaretler</div>
+        <div class="section-count" id="ziyaretCount"></div>
+      </div>
+      <div id="ziyaretGrid"></div>
+    </div>
+
+    <!-- ══ SAYFA: GÜNCEL BAKİYE ══ -->
+    <div id="pageBakiye" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        <select id="bakiyeCityFilter" style="max-width:220px;font-size:12.5px;padding:6px 10px" onchange="renderBakiye()">
+          <option value="">— Tüm İller —</option>
+        </select>
+      </div>
+      <div class="section-title-bar">
+        <div class="section-h">Güncel Bakiye</div>
+        <div class="section-count" id="bakiyeCount"></div>
+      </div>
+      <div id="bakiyeGrid"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-overlay" id="detailOverlay" style="display:none">
+  <div class="detail-panel" id="detailPanel"></div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="modalOverlay" style="display:none">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Yeni Nokta Ekle</div>
+      <button class="modal-close" id="modalClose">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field"><div class="field-label">İsim *</div><input id="fName" placeholder="Mağaza adı"></div>
+        <div class="field"><div class="field-label">Tür *</div>
+          <select id="fType"><option value="magaza">Mağaza</option><option value="satis-noktasi">Satış Noktası</option></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Şehir (İl) *</div>
+          <select id="fCity" onchange="updateDistricts()"><option value="">— İl Seçin —</option></select>
+        </div>
+        <div class="field"><div class="field-label">İlçe</div>
+          <select id="fDistrict"><option value="">— İlçe Seçin —</option></select>
+        </div>
+      </div>
+      <div class="field"><div class="field-label">Tam Adres *</div><textarea id="fAddress" placeholder="Sokak, mahalle, posta kodu…" style="min-height:48px"></textarea></div>
+
+      <!-- Yetkili kişiler -->
+      <div class="field">
+        <div class="field-label" style="margin-bottom:4px">Yetkili Kişiler</div>
+        <div class="contacts-editor" id="contactsEditor"></div>
+        <button class="add-contact-btn" onclick="addContactRow()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Yetkili Ekle
+        </button>
+      </div>
+
+      <div class="field-row">
+        <div class="field"><div class="field-label">Güncel Bakiye (USD) *</div><input id="fBalance" type="number" step="0.01" placeholder="0"></div>
+        <div class="field"><div class="field-label">Google Maps Linki</div><input id="fMapLink" placeholder="https://maps.google.com/…"></div>
+      </div>
+      <div class="field"><div class="field-label">Notlar</div><textarea id="fNotes" placeholder="Genel notlar, özel durumlar…"></textarea></div>
+      <div class="error-msg" id="modalError">Lütfen zorunlu (*) alanları doldurun.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="cancelBtn">İptal</button>
+      <button class="btn btn-primary" id="saveBtn">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- VISIT MODAL -->
+<div class="modal-overlay" id="visitModal" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="visitModalTitle">Ziyaret Kaydet</div>
+      <button class="modal-close" id="visitClose">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><div class="field-label">Ziyaret Tarihi *</div><input type="date" id="vDate"></div>
+      <div class="field"><div class="field-label">Ziyaret Notu</div><textarea id="vNote" placeholder="Görüşmeler, kararlar, aksiyon maddeleri…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="visitCancel">İptal</button>
+      <button class="btn btn-primary" id="visitSave">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- CIRO MODAL -->
+<div class="modal-overlay" id="ciroModal" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="ciroModalTitle">Ciro Girişi</div>
+      <button class="modal-close" id="ciroClose">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- Mevcut ciro kayıtları -->
+      <div id="ciroExistingWrap" style="display:none">
+        <div class="field-label" style="margin-bottom:6px">Mevcut Kayıtlar</div>
+        <div id="ciroExistingList" style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px;max-height:160px;overflow-y:auto"></div>
+        <div style="border-bottom:1px solid var(--border);margin-bottom:12px"></div>
+      </div>
+      <div class="field-label" id="ciroFormLabel" style="margin-bottom:6px;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3)">Yeni Kayıt Ekle</div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Ay *</div>
+          <select id="ciroMonth">
+            <option value="1">Ocak</option><option value="2">Şubat</option><option value="3">Mart</option>
+            <option value="4">Nisan</option><option value="5">Mayıs</option><option value="6">Haziran</option>
+            <option value="7">Temmuz</option><option value="8">Ağustos</option><option value="9">Eylül</option>
+            <option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option>
+          </select>
+        </div>
+        <div class="field"><div class="field-label">Yıl *</div><input type="number" id="ciroYear" value="2025" min="2020" max="2040"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Ciro (USD) *</div><input type="number" id="ciroAmount" placeholder="0" min="0" step="0.01"></div>
+        <div class="field"><div class="field-label">Adet</div><input type="number" id="ciroQty" placeholder="0" min="0" step="1"></div>
+      </div>
+      <div id="ciroEditHint" style="display:none;font-size:11px;color:var(--accent);margin-top:-4px">Seçili kaydı düzenliyor…<button id="ciroEditCancel" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:11px;margin-left:8px;text-decoration:underline">İptal</button></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="ciroCancel">İptal</button>
+      <button class="btn btn-primary" id="ciroSave">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSACTION MODAL (Mal Satışı / Tahsilat) -->
+<div class="modal-overlay" id="txModal" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="txModalTitle">İşlem Ekle</div>
+      <button class="modal-close" id="txClose">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <div class="field-label">İşlem Türü *</div>
+        <select id="txType">
+          <option value="sale">Mal Satışı (Alacağı artırır −)</option>
+          <option value="payment">Tahsilat (Alacağı düşürür +)</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <div class="field"><div class="field-label">Tarih *</div><input type="date" id="txDate"></div>
+        <div class="field"><div class="field-label">Tutar (USD) *</div><input type="number" id="txAmount" placeholder="0" min="0" step="0.01"></div>
+      </div>
+      <div class="field"><div class="field-label">Açıklama</div><textarea id="txNote" placeholder="Fatura no, ürün grubu, ödeme yöntemi…" style="min-height:52px"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="txCancel">İptal</button>
+      <button class="btn btn-primary" id="txSave">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- SIFIRLAMA PANELİ MODAL -->
+<div class="modal-overlay" id="resetModal" style="display:none">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <div class="modal-title" style="color:var(--red)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+        Sıfırlama Paneli
+      </div>
+      <button class="modal-close" onclick="document.getElementById('resetModal').style.display='none'">×</button>
+    </div>
+    <div class="modal-body" style="gap:10px">
+      <div style="background:var(--red-pale);border:1px solid var(--red);border-radius:7px;padding:11px 14px;font-size:12px;color:var(--red)">
+        ⚠️ Bu işlemler geri alınamaz. Silmeden önce JSON ile yedek almanızı öneririz.
+      </div>
+
+      <!-- Sadece ziyaretler -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:14px">
+        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">Tüm Ziyaret Kayıtlarını Sil</div>
+        <div style="font-size:11.5px;color:var(--text3);margin-bottom:10px">Mağaza ve satış noktaları korunur, sadece ziyaret geçmişi temizlenir.</div>
+        <button class="btn" onclick="resetVisits()" style="background:var(--red-pale);color:var(--red);border:1px solid var(--red);font-size:11.5px;padding:6px 14px">Ziyaretleri Sıfırla</button>
+      </div>
+
+      <!-- Sadece bakiye/işlemler -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:14px">
+        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">Tüm Bakiye İşlemlerini Sil</div>
+        <div style="font-size:11.5px;color:var(--text3);margin-bottom:10px">Mağazalar ve ziyaretler korunur, sadece mal satışı/tahsilat işlemleri temizlenir.</div>
+        <button class="btn" onclick="resetTransactions()" style="background:var(--red-pale);color:var(--red);border:1px solid var(--red);font-size:11.5px;padding:6px 14px">Bakiyeleri Sıfırla</button>
+      </div>
+
+      <!-- Sadece ciro -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:14px">
+        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">Tüm Ciro Kayıtlarını Sil</div>
+        <div style="font-size:11.5px;color:var(--text3);margin-bottom:10px">Mağazalar, ziyaretler ve bakiyeler korunur, sadece aylık ciro verileri temizlenir.</div>
+        <button class="btn" onclick="resetCiro()" style="background:var(--red-pale);color:var(--red);border:1px solid var(--red);font-size:11.5px;padding:6px 14px">Ciroları Sıfırla</button>
+      </div>
+
+      <!-- Tüm noktalar -->
+      <div style="background:var(--surface2);border:1px solid var(--red);border-radius:7px;padding:14px">
+        <div style="font-size:13px;font-weight:500;color:var(--red);margin-bottom:4px">🗑️ Tüm Verileri Sil</div>
+        <div style="font-size:11.5px;color:var(--text3);margin-bottom:10px">Tüm mağazalar, satış noktaları, ziyaretler, bakiyeler ve cirolar tamamen silinir. Panel boş kalır.</div>
+        <button class="btn" onclick="resetAll()" style="background:var(--red);color:#fff;border:1px solid var(--red);font-size:11.5px;padding:6px 14px">Tümünü Sıfırla</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="document.getElementById('resetModal').style.display='none'">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+const MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+
+// ── TÜRKİYE İL / İLÇE VERİSİ ─────────────────────────────────────────────────
+const TR_ILLER = {
+  'Adana':['Aladağ','Ceyhan','Çukurova','Feke','İmamoğlu','Karaisalı','Karataş','Kozan','Pozantı','Saimbeyli','Sarıçam','Seyhan','Tufanbeyli','Yumurtalık','Yüreğir'],
+  'Adıyaman':['Besni','Çelikhan','Gerger','Gölbaşı','Kahta','Merkez','Samsat','Sincik','Tut'],
+  'Afyonkarahisar':['Başmakçı','Bayat','Bolvadin','Çay','Çobanlar','Dazkırı','Dinar','Emirdağ','Evciler','Hocalar','İhsaniye','İscehisar','Kızılören','Merkez','Sandıklı','Sinanpaşa','Sultandağı','Şuhut'],
+  'Ağrı':['Diyadin','Doğubayazıt','Eleşkirt','Hamur','Merkez','Patnos','Taşlıçay','Tutak'],
+  'Aksaray':['Ağaçören','Eskil','Gülağaç','Güzelyurt','Merkez','Ortaköy','Sarıyahşi','Sultanhanı'],
+  'Amasya':['Göynücek','Gümüşhacıköy','Hamamözü','Merkez','Merzifon','Suluova','Taşova'],
+  'Ankara':['Akyurt','Altındağ','Ayaş','Bala','Beypazarı','Çamlıdere','Çankaya','Çubuk','Elmadağ','Etimesgut','Evren','Gölbaşı','Güdül','Haymana','Kalecik','Kahramankazan','Keçiören','Kızılcahamam','Mamak','Nallıhan','Polatlı','Pursaklar','Sincan','Şereflikoçhisar','Yenimahalle'],
+  'Antalya':['Akseki','Aksu','Alanya','Demre','Döşemealtı','Elmalı','Finike','Gazipaşa','Gündoğmuş','İbradı','Kaş','Kemer','Kepez','Konyaaltı','Korkuteli','Kumluca','Manavgat','Muratpaşa','Serik'],
+  'Ardahan':['Çıldır','Damal','Göle','Hanak','Merkez','Posof'],
+  'Artvin':['Ardanuç','Arhavi','Borçka','Hopa','Kemalpaşa','Merkez','Murgul','Şavşat','Yusufeli'],
+  'Aydın':['Bozdoğan','Buharkent','Çine','Didim','Efeler','Germencik','İncirliova','Karacasu','Karpuzlu','Koçarlı','Köşk','Kuşadası','Kuyucak','Nazilli','Söke','Sultanhisar','Yenipazar'],
+  'Balıkesir':['Altıeylül','Ayvalık','Balya','Bandırma','Bigadiç','Burhaniye','Dursunbey','Edremit','Erdek','Gömeç','Gönen','Havran','İvrindi','Karesi','Kepsut','Manyas','Marmara','Savaştepe','Sındırgı','Susurluk'],
+  'Bartın':['Amasra','Kurucaşile','Merkez','Ulus'],
+  'Batman':['Beşiri','Gercüş','Hasankeyf','Kozluk','Merkez','Sason'],
+  'Bayburt':['Aydıntepe','Demirözü','Merkez'],
+  'Bilecik':['Bozüyük','Gölpazarı','İnhisar','Merkez','Osmaneli','Pazaryeri','Söğüt','Yenipazar'],
+  'Bingöl':['Adaklı','Genç','Karlıova','Kiğı','Merkez','Solhan','Yayladere','Yedisu'],
+  'Bitlis':['Adilcevaz','Ahlat','Güroymak','Hizan','Merkez','Mutki','Tatvan'],
+  'Bolu':['Dörtdivan','Gerede','Göynük','Kıbrıscık','Mengen','Merkez','Mudurnu','Seben','Yeniçağa'],
+  'Burdur':['Ağlasun','Altınyayla','Bucak','Çavdır','Çeltikçi','Gölhisar','Kemer','Merkez','Tefenni','Yeşilova'],
+  'Bursa':['Büyükorhan','Gemlik','Gürsu','Harmancık','İnegöl','İznik','Karacabey','Keles','Kestel','Mudanya','Mustafakemalpaşa','Nilüfer','Orhaneli','Orhangazi','Osmangazi','Yenişehir','Yıldırım'],
+  'Çanakkale':['Ayvacık','Bayramiç','Biga','Bozcaada','Çan','Eceabat','Ezine','Gelibolu','Gökçeada','Lapseki','Merkez','Yenice'],
+  'Çankırı':['Atkaracalar','Bayramören','Çerkeş','Eldivan','Ilgaz','Khanköy','Korgun','Kurşunlu','Merkez','Orta','Şabanözü','Yapraklı'],
+  'Çorum':['Alaca','Bayat','Boğazkale','Dodurga','İskilip','Kargı','Laçin','Mecitözü','Merkez','Oğuzlar','Ortaköy','Osmancık','Sungurlu','Uğurludağ'],
+  'Denizli':['Acıpayam','Babadağ','Baklan','Bekilli','Beyağaç','Bozkurt','Buldan','Çal','Çameli','Çardak','Çivril','Güney','Honaz','Kale','Merkezefendi','Pamukkale','Sarayköy','Serinhisar','Tavas'],
+  'Diyarbakır':['Bağlar','Bismil','Çermik','Çınar','Çüngüş','Dicle','Eğil','Ergani','Hani','Hazro','Kayapınar','Kocaköy','Kulp','Lice','Silvan','Sur','Yenişehir'],
+  'Düzce':['Akçakoca','Cumayeri','Çilimli','Gölyaka','Gümüşova','Kaynaşlı','Merkez','Yığılca'],
+  'Edirne':['Enez','Havsa','İpsala','Keşan','Lalapaşa','Meriç','Merkez','Süloğlu','Uzunköprü'],
+  'Elazığ':['Ağın','Alacakaya','Arıcak','Baskil','Karakoçan','Keban','Kovancılar','Maden','Merkez','Palu','Sivrice'],
+  'Erzincan':['Çayırlı','İliç','Kemah','Kemaliye','Merkez','Otlukbeli','Refahiye','Tercan','Üzümlü'],
+  'Erzurum':['Aşkale','Aziziye','Çat','Hınıs','Horasan','İspir','Karaçoban','Karayazı','Köprüköy','Merkez','Narman','Oltu','Olur','Palandöken','Pasinler','Pazaryolu','Şenkaya','Tekman','Tortum','Uzundere','Yakutiye'],
+  'Eskişehir':['Alpu','Beylikova','Çifteler','Günyüzü','Han','İnönü','Mahmudiye','Mihalgazi','Mihalıççık','Odunpazarı','Sarıcakaya','Seyitgazi','Sivrihisar','Tepebaşı'],
+  'Gaziantep':['Araban','İslahiye','Karkamış','Nurdağı','Nizip','Oğuzeli','Şahinbey','Şehitkamil','Yavuzeli'],
+  'Giresun':['Alucra','Bulancak','Çamoluk','Çanakçı','Dereli','Doğankent','Espiye','Eynesil','Görele','Güce','Keşap','Merkez','Piraziz','Şebinkarahisar','Tirebolu','Yağlıdere'],
+  'Gümüşhane':['Kelkit','Köse','Kürtün','Merkez','Şiran','Torul'],
+  'Hakkari':['Çukurca','Derecik','Merkez','Şemdinli','Yüksekova'],
+  'Hatay':['Altınözü','Antakya','Arsuz','Belen','Defne','Dörtyol','Erzin','Hassa','İskenderun','Kırıkhan','Kumlu','Payas','Reyhanlı','Samandağ','Yayladağı'],
+  'Iğdır':['Aralık','Karakoyunlu','Merkez','Tuzluca'],
+  'Isparta':['Aksu','Atabey','Eğirdir','Gelendost','Gönen','Keçiborlu','Merkez','Senirkent','Sütçüler','Şarkikaraağaç','Uluborlu','Yalvaç','Yenişarbademli'],
+  'İstanbul':['Adalar','Arnavutköy','Ataşehir','Avcılar','Bağcılar','Bahçelievler','Bakırköy','Başakşehir','Bayrampaşa','Beşiktaş','Beykoz','Beylikdüzü','Beyoğlu','Büyükçekmece','Çatalca','Çekmeköy','Esenler','Esenyurt','Eyüpsultan','Fatih','Gaziosmanpaşa','Güngören','Kadıköy','Kağıthane','Kartal','Küçükçekmece','Maltepe','Pendik','Sancaktepe','Sarıyer','Silivri','Sultanbeyli','Sultangazi','Şile','Şişli','Tuzla','Ümraniye','Üsküdar','Zeytinburnu'],
+  'İzmir':['Aliağa','Balçova','Bayındır','Bayraklı','Bergama','Beydağ','Bornova','Buca','Çeşme','Çiğli','Dikili','Foça','Gaziemir','Güzelbahçe','Karabağlar','Karaburun','Karşıyaka','Kemalpaşa','Kınık','Kiraz','Konak','Menderes','Menemen','Narlıdere','Ödemiş','Seferihisar','Selçuk','Tire','Torbalı','Urla'],
+  'Kahramanmaraş':['Afşin','Andırın','Çağlayancerit','Dulkadiroğlu','Ekinözü','Elbistan','Göksun','Nurhak','Onikişubat','Pazarcık','Türkoğlu'],
+  'Karabük':['Eflani','Eskipazar','Merkez','Ovacık','Safranbolu','Yenice'],
+  'Karaman':['Ayrancı','Başyayla','Ermenek','Kazımkarabekir','Merkez','Sarıveliler'],
+  'Kars':['Akyaka','Arpaçay','Digor','Kağızman','Merkez','Sarıkamış','Selim','Susuz'],
+  'Kastamonu':['Abana','Ağlı','Araç','Azdavay','Bozkurt','Cide','Çatalzeytin','Daday','Devrekani','Doğanyurt','Hanönü','İhsangazi','İnebolu','Küre','Merkez','Pınarbaşı','Seydiler','Şenpazar','Taşköprü','Tosya'],
+  'Kayseri':['Akkışla','Bünyan','Develi','Felahiye','Hacılar','İncesu','Kocasinan','Melikgazi','Özvatan','Pınarbaşı','Sarıoğlan','Sarız','Talas','Tomarza','Yahyalı','Yeşilhisar'],
+  'Kırıkkale':['Bahşili','Balışeyh','Çelebi','Delice','Karakeçili','Keskin','Merkez','Sulakyurt','Yahşihan'],
+  'Kırklareli':['Babaeski','Demirköy','Kofçaz','Lüleburgaz','Merkez','Pehlivanköy','Pınarhisar','Vize'],
+  'Kırşehir':['Akçakent','Akpınar','Boztepe','Çiçekdağı','Kaman','Merkez','Mucur'],
+  'Kilis':['Elbeyli','Merkez','Musabeyli','Polateli'],
+  'Kocaeli':['Başiskele','Çayırova','Darıca','Derince','Dilovası','Gebze','Gölcük','İzmit','Kandıra','Karamürsel','Kartepe','Körfez'],
+  'Konya':['Ahırlı','Akören','Akşehir','Altınekin','Beyşehir','Bozkır','Cihanbeyli','Çeltik','Çumra','Derbent','Derebucak','Doğanhisar','Emirgazi','Ereğli','Güneysinir','Hadim','Halkapınar','Hüyük','Ilgın','Kadınhanı','Karapınar','Karatay','Kulu','Meram','Sarayönü','Selçuklu','Seydişehir','Taşkent','Tuzlukçu','Yalıhüyük','Yunak'],
+  'Kütahya':['Altıntaş','Aslanapa','Çavdarhisar','Domaniç','Dumlupınar','Emet','Gediz','Hisarcık','Merkez','Pazarlar','Şaphane','Simav','Tavşanlı'],
+  'Malatya':['Akçadağ','Arapgir','Arguvan','Battalgazi','Darende','Doğanyol','Doğanşehir','Hekimhan','Kale','Kuluncak','Pütürge','Yazıhan','Yeşilyurt'],
+  'Manisa':['Ahmetli','Akhisar','Alaşehir','Demirci','Gölmarmara','Gördes','Kırkağaç','Köprübaşı','Kula','Merkez','Salihli','Sarıgöl','Saruhanlı','Selendi','Soma','Şehzadeler','Turgutlu','Yunusemre'],
+  'Mardin':['Artuklu','Dargeçit','Derik','Kızıltepe','Mazıdağı','Midyat','Nusaybin','Ömerli','Savur','Yeşilli'],
+  'Mersin':['Akdeniz','Anamur','Aydıncık','Bozyazı','Çamlıyayla','Erdemli','Gülnar','Mezitli','Mut','Silifke','Tarsus','Toroslar','Yenişehir'],
+  'Muğla':['Bodrum','Dalaman','Datça','Fethiye','Kavaklıdere','Köyceğiz','Marmaris','Menteşe','Milas','Ortaca','Seydikemer','Ula','Yatağan'],
+  'Muş':['Bulanık','Hasköy','Korkut','Malazgirt','Merkez','Varto'],
+  'Nevşehir':['Acıgöl','Avanos','Derinkuyu','Gülşehir','Hacıbektaş','Kozaklı','Merkez','Ürgüp'],
+  'Niğde':['Altunhisar','Bor','Çamardı','Çiftlik','Merkez','Ulukışla'],
+  'Ordu':['Akkuş','Altınordu','Aybastı','Çamaş','Çatalpınar','Çaybaşı','Fatsa','Gölköy','Gülyalı','Gürgentepe','İkizce','Kabadüz','Kabataş','Korgan','Kumru','Mesudiye','Perşembe','Ulubey','Ünye'],
+  'Osmaniye':['Bahçe','Düziçi','Hasanbeyli','Kadirli','Merkez','Sumbas','Toprakkale'],
+  'Rize':['Ardeşen','Çamlıhemşin','Çayeli','Derepazarı','Fındıklı','Güneysu','Hemşin','İkizdere','İyidere','Kalkandere','Merkez','Pazar'],
+  'Sakarya':['Adapazarı','Akyazı','Arifiye','Erenler','Ferizli','Geyve','Hendek','Karapürçek','Karasu','Kaynarca','Kocaali','Mithatpaşa','Pamukova','Sapanca','Serdivan','Söğütlü','Taraklı'],
+  'Samsun':['Alaçam','Asarcık','Atakum','Ayvacık','Bafra','Canik','Çarşamba','Havza','İlkadım','Kavak','Ladik','Ondokuzmayıs','Salıpazarı','Tekkeköy','Terme','Vezirköprü','Yakakent'],
+  'Siirt':['Baykan','Eruh','Kurtalan','Merkez','Pervari','Şirvan','Tillo'],
+  'Sinop':['Ayancık','Boyabat','Dikmen','Durağan','Erfelek','Gerze','Merkez','Saraydüzü','Türkeli'],
+  'Sivas':['Akıncılar','Altınyayla','Divriği','Doğanşar','Gemerek','Gölova','Hafik','İmranlı','Kangal','Koyulhisar','Merkez','Suşehri','Şarkışla','Ulaş','Yıldızeli','Zara'],
+  'Şanlıurfa':['Akçakale','Birecik','Bozova','Ceylanpınar','Eyyübiye','Halfeti','Haliliye','Harran','Hilvan','Karaköprü','Siverek','Suruç','Viranşehir'],
+  'Şırnak':['Beytüşşebap','Cizre','Güçlükonak','İdil','Merkez','Silopi','Uludere'],
+  'Tekirdağ':['Çerkezköy','Çorlu','Ergene','Hayrabolu','Kapaklı','Malkara','Marmaraereğlisi','Muratlı','Saray','Süleymanpaşa','Şarköy'],
+  'Tokat':['Almus','Artova','Başçiftlik','Erbaa','Merkez','Niksar','Pazar','Reşadiye','Sulusaray','Turhal','Yeşilyurt','Zile'],
+  'Trabzon':['Akçaabat','Araklı','Arsin','Beşikdüzü','Çarşıbaşı','Çaykara','Dernekpazarı','Düzköy','Hayrat','Köprübaşı','Maçka','Merkez','Of','Ortahisar','Şalpazarı','Sürmene','Tonya','Vakfıkebir','Yomra'],
+  'Tunceli':['Çemişgezek','Hozat','Mazgirt','Merkez','Nazimiye','Ovacık','Pertek','Pülümür'],
+  'Uşak':['Banaz','Eşme','Karahallı','Merkez','Sivaslı','Ulubey'],
+  'Van':['Bahçesaray','Başkale','Çaldıran','Çatak','Edremit','Erciş','Gevaş','Gürpınar','İpekyolu','Merkez','Muradiye','Özalp','Saray','Tuşba'],
+  'Yalova':['Altınova','Armutlu','Çiftlikköy','Çınarcık','Merkez','Termal'],
+  'Yozgat':['Akdağmadeni','Aydıncık','Boğazlıyan','Çandır','Çayıralan','Çekerek','Kadışehri','Merkez','Saraykent','Sarıkaya','Şefaatli','Sorgun','Yenifakılı','Yerköy'],
+  'Zonguldak':['Alaplı','Çaycuma','Devrek','Ereğli','Gökçebey','Kilimli','Kozlu','Merkez']
+};
+
+function populateCityDropdown() {
+  const sel = document.getElementById('fCity');
+  if (!sel) return;
+  const cities = Object.keys(TR_ILLER).sort();
+  sel.innerHTML = '<option value="">— İl Seçin —</option>' + cities.map(c=>`<option value="${c}">${c}</option>`).join('');
+}
+
+function updateDistricts(selectedDistrict) {
+  const city = document.getElementById('fCity').value;
+  const distSel = document.getElementById('fDistrict');
+  const districts = TR_ILLER[city] || [];
+  distSel.innerHTML = '<option value="">— İlçe Seçin —</option>' + districts.map(d=>`<option value="${d}">${d}</option>`).join('');
+  if (selectedDistrict && districts.includes(selectedDistrict)) distSel.value = selectedDistrict;
+}
+
+// ── FIREBASE ──────────────────────────────────────────────────────────────────
+import { initializeApp }                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, onValue, goOnline, goOffline } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyBQV61DA7zQK85L_bPuvVwEvFdwkT3O2W4",
+  authDomain:        "sina-pirlanta-saha-otomasyon.firebaseapp.com",
+  databaseURL:       "https://sina-pirlanta-saha-otomasyon-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:         "sina-pirlanta-saha-otomasyon",
+  storageBucket:     "sina-pirlanta-saha-otomasyon.firebasestorage.app",
+  messagingSenderId: "795443615025",
+  appId:             "1:795443615025:web:99ab703700d26f3f714c10"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db    = getDatabase(fbApp);
+const DATA_REF = ref(db, 'panel');
+
+let _fbReady = false; // ilk yük tamamlandı mı?
+
+function setConnStatus(online) {
+  const el = document.getElementById('connStatus');
+  if (!el) return;
+  if (online) {
+    el.textContent = '● Bağlı';
+    el.style.color = 'var(--green)';
+  } else {
+    el.textContent = '○ Çevrimdışı';
+    el.style.color = 'var(--orange)';
+  }
+}
+
+// Firebase'den gerçek zamanlı dinle
+onValue(DATA_REF, (snapshot) => {
+  const data = snapshot.val();
+  setConnStatus(true);
+  if (data && Array.isArray(data.stores)) {
+    stores = data.stores;
+    nextId = data.nextId || (stores.length ? Math.max(...stores.map(s=>s.id)) + 1 : 1);
+  } else {
+    stores = [];
+    nextId = 1;
+  }
+  _fbReady = true;
+  expandedCities = new Set();
+  populateCityFilter();
+  document.getElementById('loadingOverlay').style.display = 'none';
+  render();
+}, (error) => {
+  setConnStatus(false);
+  console.error('Firebase okuma hatası:', error);
+});
+
+// Bağlantı durumu takibi
+const connRef = ref(db, '.info/connected');
+onValue(connRef, (snap) => setConnStatus(snap.val() === true));
+
+function saveData() {
+  if (!_fbReady) return; // ilk yük tamamlanmadan yazma
+  set(DATA_REF, { stores, nextId }).catch(err => {
+    console.error('Firebase yazma hatası:', err);
+    setConnStatus(false);
+  });
+}
+
+let stores = [];
+let nextId  = 1;
+
+let activeType    = 'all';
+let activeFilters = new Set();
+let searchQ       = '';
+let editingId     = null;
+let visitingId    = null;
+let ciroingId     = null;
+let txingId       = null;
+let detailId      = null;
+let activePage    = 'noktalar'; // 'noktalar' | 'ziyaretler' | 'bakiye'
+
+// Sort state: null | 'asc' | 'desc'
+let sortBalance  = null;
+let sortVisit    = null;
+let txEditIdx    = null;
+let visitEditIdx = null;
+let ciroEditIdx  = null;
+
+let expandedCities = new Set();
+
+function toggleCity(city) {
+  if (expandedCities.has(city)) expandedCities.delete(city);
+  else expandedCities.add(city);
+  renderGrid();
+}
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function daysSince(dateStr) {
+  if (!dateStr) return Infinity;
+  return Math.floor((Date.now() - new Date(dateStr)) / 86400000);
+}
+function lastVisitDate(store) {
+  if (!store.visits.length) return null;
+  return store.visits.slice().sort((a,b)=>b.date.localeCompare(a.date))[0].date;
+}
+function visitStatus(store) {
+  const d = daysSince(lastVisitDate(store));
+  if (d <= 30)  return 'green';
+  if (d <= 60)  return 'orange';
+  return 'red';
+}
+function formatDate(s) {
+  if (!s) return 'Ziyaret yok';
+  const [y,m,d] = s.split('-');
+  return `${d} ${MONTHS[parseInt(m)-1]} ${y}`;
+}
+function formatUSD(n) {
+  const v = parseFloat(n)||0;
+  return '$' + v.toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:2});
+}
+
+// Güncel Bakiye = Tahsilat toplamı - Mal Satışı toplamı
+// Mal Satışı: eksi (borç oluştu), Tahsilat: artı (para geldi)
+function computedBalance(store) {
+  const txs = store.transactions || [];
+  const totalSales    = txs.filter(t=>t.type==='sale').reduce((s,t)=>s+t.amount,0);
+  const totalPayments = txs.filter(t=>t.type==='payment').reduce((s,t)=>s+t.amount,0);
+  return totalPayments - totalSales;
+}
+
+function populateCityFilter() {
+  const cities = [...new Set(stores.map(s=>s.city))].sort();
+  const opts = '<option value="">— Tüm İller —</option>' + cities.map(c=>`<option value="${c}">${c}</option>`).join('');
+  ['cityFilter','ziyaretCityFilter','bakiyeCityFilter'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = opts;
+    if (cities.includes(cur)) sel.value = cur;
+  });
+}
+
+// Sort cycle helpers
+function cycleSortBalance() {
+  sortVisit = null;
+  if (sortBalance === null) sortBalance = 'desc';
+  else if (sortBalance === 'desc') sortBalance = 'asc';
+  else sortBalance = null;
+  const labels = {null:'Güncel Bakiye', desc:'Bakiye ↓ (Büyükten)', asc:'Bakiye ↑ (Küçükten)'};
+  document.getElementById('sortBalanceLabel').textContent = labels[sortBalance];
+  document.getElementById('sortBalanceBtn').style.borderColor = sortBalance ? 'var(--accent)' : '';
+  document.getElementById('sortVisitLabel').textContent = 'Ziyaret Tarihi';
+  document.getElementById('sortVisitBtn').style.borderColor = '';
+  render();
+}
+function cycleSortVisit() {
+  sortBalance = null;
+  if (sortVisit === null) sortVisit = 'asc';
+  else if (sortVisit === 'asc') sortVisit = 'desc';
+  else sortVisit = null;
+  const labels = {null:'Ziyaret Tarihi', asc:'Ziyaret ↑ (En Eski)', desc:'Ziyaret ↓ (En Yeni)'};
+  document.getElementById('sortVisitLabel').textContent = labels[sortVisit];
+  document.getElementById('sortVisitBtn').style.borderColor = sortVisit ? 'var(--green)' : '';
+  document.getElementById('sortBalanceLabel').textContent = 'Güncel Bakiye';
+  document.getElementById('sortBalanceBtn').style.borderColor = '';
+  render();
+}
+
+function filteredStores() {
+  const cityFilterVal = document.getElementById('cityFilter') ? document.getElementById('cityFilter').value : '';
+  const typeFilterVal = document.getElementById('typeFilter') ? document.getElementById('typeFilter').value : 'all';
+  let result = stores.filter(s => {
+    if (typeFilterVal !== 'all' && s.type !== typeFilterVal) return false;
+    if (cityFilterVal && s.city !== cityFilterVal) return false;
+    if (searchQ) {
+      const q = searchQ.toLowerCase();
+      const contactNames = (s.contacts||[]).map(c=>c.name).join(' ');
+      if (![s.name,s.city,s.district,s.address,contactNames].some(f=>(f||'').toLowerCase().includes(q))) return false;
+    }
+    return true;
+  });
+
+  // Sorting
+  if (sortBalance !== null) {
+    result = result.slice().sort((a,b) => {
+      const diff = computedBalance(a) - computedBalance(b);
+      return sortBalance === 'desc' ? -diff : diff;
+    });
+  } else if (sortVisit !== null) {
+    result = result.slice().sort((a,b) => {
+      const da = lastVisitDate(a) || '0000-00-00';
+      const db = lastVisitDate(b) || '0000-00-00';
+      return sortVisit === 'asc' ? da.localeCompare(db) : db.localeCompare(da);
+    });
+  }
+  return result;
+}
+function maxCiro(store) {
+  return Math.max(...(store.ciro||[]).map(c=>c.amount), 1);
+}
+function firstContact(store) {
+  return (store.contacts && store.contacts.length > 0) ? store.contacts[0] : null;
+}
+
+// ── RENDER STATS ─────────────────────────────────────────────────────────────
+function renderStats() {
+  const fs = filteredStores();
+  const totalBalance = fs.reduce((s,x)=>s+computedBalance(x),0);
+  const overdue      = fs.filter(s=>visitStatus(s)==='red').length;
+  const negBal       = fs.filter(s=>computedBalance(s)<0).length;
+  const thisMonth = new Date().getMonth()+1, thisYear = new Date().getFullYear();
+  const totalCiro = fs.reduce((s,x)=>{
+    const c = (x.ciro||[]).find(r=>r.month===thisMonth&&r.year===thisYear);
+    return s + (c?c.amount:0);
+  },0);
+
+  const balCls = totalBalance < 0 ? 'stat-red' : '';
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Toplam Nokta</div>
+      <div class="stat-val">${fs.length}</div>
+      <div class="stat-sub">${fs.filter(s=>s.type==='magaza').length} mağaza · ${fs.filter(s=>s.type==='satis-noktasi').length} satış noktası</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Toplam Bakiye</div>
+      <div class="stat-val ${balCls}">${formatUSD(totalBalance)}</div>
+      <div class="stat-sub">${negBal} noktada negatif bakiye</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Bu Ay Ciro</div>
+      <div class="stat-val stat-accent">${formatUSD(totalCiro)}</div>
+      <div class="stat-sub">${MONTHS[thisMonth-1]} ${thisYear}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Ziyaretler</div>
+      <div class="stat-val ${overdue>0?'stat-red':''}">${overdue}</div>
+      <div class="stat-sub">60+ gün ziyaret edilmeyen</div>
+    </div>`;
+}
+
+// ── RENDER GRID (liste görünümü) ───────────────────────────────────────────────
+function renderGrid() {
+  populateCityFilter();
+  const fs = filteredStores();
+  const grid = document.getElementById('storesGrid');
+  document.getElementById('gridCount').textContent = fs.length + ' nokta';
+  document.getElementById('totalBadge').textContent = stores.length;
+
+  if (!fs.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">💎</div><div class="empty-title">Sonuç bulunamadı</div><div class="empty-sub">Filtreleri değiştirerek tekrar deneyin</div></div>`;
+    return;
+  }
+
+  const thisMonth = new Date().getMonth()+1, thisYear = new Date().getFullYear();
+
+  // Group by city if no sort active
+  const useFlatList = (sortBalance !== null || sortVisit !== null);
+
+  if (useFlatList) {
+    grid.innerHTML = buildListHeader() + fs.map(s => buildListRow(s, thisMonth, thisYear)).join('');
+    return;
+  }
+
+  // Group by city
+  const cityMap = {};
+  fs.forEach(s => { if (!cityMap[s.city]) cityMap[s.city]=[]; cityMap[s.city].push(s); });
+  const cities = Object.keys(cityMap).sort();
+  if (cities.length === 1 || searchQ) cities.forEach(c => expandedCities.add(c));
+
+  grid.innerHTML = cities.map(city => {
+    const cityStores = cityMap[city];
+    const isOpen = expandedCities.has(city);
+    const negCount = cityStores.filter(s=>computedBalance(s)<0).length;
+    const overdueCount = cityStores.filter(s=>visitStatus(s)==='red').length;
+    const magazaCount = cityStores.filter(s=>s.type==='magaza').length;
+    const satisCount = cityStores.filter(s=>s.type==='satis-noktasi').length;
+    const badges = [
+      magazaCount > 0 ? `<span class="city-badge badge-magaza">${magazaCount} mağaza</span>` : '',
+      satisCount > 0  ? `<span class="city-badge badge-satis">${satisCount} satış noktası</span>` : '',
+      negCount > 0    ? `<span class="city-badge badge-neg">⚠ ${negCount} negatif</span>` : '',
+      overdueCount > 0 ? `<span class="city-badge badge-overdue">⏰ ${overdueCount} geciken</span>` : '',
+    ].filter(Boolean).join('');
+    return `<div class="city-group">
+      <div class="city-header" onclick="toggleCity('${city.replace(/'/g,"\\'")}')">
+        <div class="city-header-left">
+          <svg class="city-chevron ${isOpen?'open':''}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="city-name">${city}</span>
+          <span class="city-total">${cityStores.length} nokta</span>
+        </div>
+        <div class="city-badges">${badges}</div>
+      </div>
+      <div class="city-body ${isOpen?'open':''}">
+        ${buildListHeader()}
+        ${cityStores.map(s=>buildListRow(s,thisMonth,thisYear)).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildListHeader() {
+  return `<div class="slr-header">
+    <span style="flex:2;min-width:180px">İsim</span>
+    <span style="flex:1;min-width:100px">Şehir / İlçe</span>
+    <span style="flex:1.5;min-width:120px">Yetkili</span>
+    <span style="flex:1;min-width:90px">Son Ziyaret</span>
+    <span style="flex:1;min-width:90px;text-align:right">Bu Ay Ciro</span>
+    <span style="flex:1;min-width:90px;text-align:right">Güncel Bakiye</span>
+    <span style="flex-shrink:0;width:80px"></span>
+  </div>`;
+}
+
+function buildListRow(s, thisMonth, thisYear) {
+  const vs   = visitStatus(s);
+  const lvd  = lastVisitDate(s);
+  const ciro = (s.ciro||[]).find(r=>r.month===thisMonth&&r.year===thisYear);
+  const bal  = computedBalance(s);
+  const balCls = bal < 0 ? 'color:var(--red)' : bal < 2000 ? 'color:var(--orange)' : 'color:var(--green)';
+  const visitCol = lvd ? `<span style="color:${vs==='red'?'var(--red)':vs==='orange'?'var(--orange)':'var(--green)'}">${daysSince(lvd)} gün önce</span>` : `<span style="color:var(--text3)">Yok</span>`;
+  const fc = firstContact(s);
+  const typeTag = s.type==='magaza'
+    ? `<span class="type-tag tag-magaza" style="font-size:8px;padding:2px 6px">M</span>`
+    : `<span class="type-tag tag-satis" style="font-size:8px;padding:2px 6px">SN</span>`;
+  return `<div class="store-list-row ${s.type}" onclick="openDetail(${s.id})">
+    <div class="slr-name">${typeTag} ${s.name}</div>
+    <div class="slr-city">${s.city}${s.district?'<br><span style="font-size:10px">'+s.district+'</span>':''}</div>
+    <div class="slr-contact">${fc?fc.name+'<br><span style="font-size:10px;color:var(--text3)">'+fc.phone+'</span>':'—'}</div>
+    <div class="slr-visit">${visitCol}</div>
+    <div class="slr-balance" style="color:var(--text2)">${ciro?formatUSD(ciro.amount):'—'}</div>
+    <div class="slr-balance" style="${balCls}">${formatUSD(bal)}</div>
+    <div class="slr-actions" onclick="event.stopPropagation()">
+      <button class="slr-btn green" onclick="openVisitModal(${s.id})">Ziyaret</button>
+      <button class="slr-btn blue" onclick="openTxModal(${s.id})">İşlem</button>
+    </div>
+  </div>`;
+}
+
+// ── RENDER ZİYARETLER ─────────────────────────────────────────────────────────
+function renderZiyaretler() {
+  populateCityFilter();
+  const city  = document.getElementById('ziyaretCityFilter').value;
+  const durum = document.getElementById('ziyaretDurumFilter').value;
+  let list = stores.filter(s => {
+    if (city && s.city !== city) return false;
+    if (durum !== 'all' && visitStatus(s) !== durum) return false;
+    return true;
+  }).slice().sort((a,b) => {
+    const da = lastVisitDate(a) || '0000-00-00';
+    const db = lastVisitDate(b) || '0000-00-00';
+    return da.localeCompare(db); // en eski önce
+  });
+
+  document.getElementById('ziyaretCount').textContent = list.length + ' nokta';
+  const grid = document.getElementById('ziyaretGrid');
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🗓️</div><div class="empty-title">Sonuç bulunamadı</div></div>`;
+    return;
+  }
+
+  grid.innerHTML = `<div class="page-table-wrap"><table class="page-table">
+    <thead><tr>
+      <th>Nokta</th><th>Şehir</th><th>Tür</th>
+      <th>Son Ziyaret</th><th>Gün</th><th>Durum</th><th></th>
+    </tr></thead>
+    <tbody>${list.map(s=>{
+      const vs = visitStatus(s);
+      const lvd = lastVisitDate(s);
+      const d = daysSince(lvd);
+      const statusLabel = vs==='red'?`<span style="color:var(--red);font-size:10px;font-weight:500">⚠ Gecikiyor</span>`:vs==='orange'?`<span style="color:var(--orange);font-size:10px">Yakın</span>`:`<span style="color:var(--green);font-size:10px">Güncel</span>`;
+      return `<tr onclick="openDetail(${s.id})">
+        <td style="font-weight:500;color:var(--text)">${s.name}</td>
+        <td>${s.city}${s.district?', '+s.district:''}</td>
+        <td>${s.type==='magaza'?'Mağaza':'Satış Noktası'}</td>
+        <td>${lvd?formatDate(lvd):'<span style="color:var(--text3)">Ziyaret yok</span>'}</td>
+        <td style="color:${vs==='red'?'var(--red)':vs==='orange'?'var(--orange)':'var(--text3)'}">${lvd?d+' gün':'—'}</td>
+        <td>${statusLabel}</td>
+        <td onclick="event.stopPropagation()"><button class="slr-btn green" onclick="openVisitModal(${s.id})">Ziyaret Ekle</button></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+}
+
+// ── RENDER BAKİYE ─────────────────────────────────────────────────────────────
+function renderBakiye() {
+  populateCityFilter();
+  const city = document.getElementById('bakiyeCityFilter').value;
+  let list = stores.filter(s => {
+    if (city && s.city !== city) return false;
+    return true;
+  }).slice().sort((a,b) => computedBalance(b) - computedBalance(a));
+
+  document.getElementById('bakiyeCount').textContent = list.length + ' nokta';
+  const grid = document.getElementById('bakiyeGrid');
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">💰</div><div class="empty-title">Sonuç bulunamadı</div></div>`;
+    return;
+  }
+
+  const totalBal = list.reduce((s,x)=>s+computedBalance(x),0);
+
+  grid.innerHTML = `<div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+    <div class="stat-card" style="flex:1;min-width:140px"><div class="stat-label">Net Bakiye</div><div class="stat-val" style="font-size:20px;color:${totalBal>=0?'var(--green)':'var(--red)'}">${formatUSD(totalBal)}</div></div>
+    <div class="stat-card" style="flex:1;min-width:140px"><div class="stat-label">Tahsilat Fazlası</div><div class="stat-val" style="font-size:20px;color:var(--green)">${list.filter(s=>computedBalance(s)>0).length} nokta</div></div>
+    <div class="stat-card" style="flex:1;min-width:140px"><div class="stat-label">Açık Alacak</div><div class="stat-val" style="font-size:20px;color:var(--red)">${list.filter(s=>computedBalance(s)<0).length} nokta</div></div>
+  </div>
+  <div class="page-table-wrap"><table class="page-table">
+    <thead><tr>
+      <th>Nokta</th><th>Şehir</th><th>Tür</th>
+      <th style="text-align:right">Toplam Mal Satışı</th>
+      <th style="text-align:right">Toplam Tahsilat</th>
+      <th style="text-align:right">Güncel Bakiye</th>
+      <th></th>
+    </tr></thead>
+    <tbody>${list.map(s=>{
+      const txs = s.transactions||[];
+      const totalSales = txs.filter(t=>t.type==='sale').reduce((a,t)=>a+t.amount,0);
+      const totalPayments = txs.filter(t=>t.type==='payment').reduce((a,t)=>a+t.amount,0);
+      const bal = computedBalance(s);
+      return `<tr onclick="openDetail(${s.id})">
+        <td style="font-weight:500;color:var(--text)">${s.name}</td>
+        <td>${s.city}${s.district?', '+s.district:''}</td>
+        <td>${s.type==='magaza'?'Mağaza':'Satış Noktası'}</td>
+        <td style="text-align:right;color:var(--blue)">${formatUSD(totalSales)}</td>
+        <td style="text-align:right;color:var(--green)">${formatUSD(totalPayments)}</td>
+        <td style="text-align:right;font-weight:600;color:${bal<0?'var(--red)':bal<2000?'var(--orange)':'var(--green)'}">${formatUSD(bal)}</td>
+        <td onclick="event.stopPropagation()"><button class="slr-btn blue" onclick="openTxModal(${s.id})">İşlem Ekle</button></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+}
+
+function render() {
+  saveData();
+  renderStats();
+  if (activePage === 'noktalar') renderGrid();
+  else if (activePage === 'ziyaretler') renderZiyaretler();
+  else if (activePage === 'bakiye') renderBakiye();
+}
+
+// ── DETAIL PANEL ──────────────────────────────────────────────────────────────
+function openDetail(id) {
+  const s = stores.find(x=>x.id===id);
+  if (!s) return;
+  detailId = id;
+  const typeColor = s.type === 'magaza' ? 'var(--accent)' : 'var(--blue)';
+  const sortedVisits = s.visits.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const sortedCiro   = (s.ciro||[]).slice().sort((a,b)=> b.year!==a.year ? b.year-a.year : b.month-a.month);
+  const sortedTx     = (s.transactions||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const maxC = maxCiro(s);
+
+  const contactsHtml = (s.contacts||[]).length > 0
+    ? (s.contacts||[]).map(c=>`
+        <div class="contact-item">
+          <div class="contact-avatar">${(c.name||'?').charAt(0).toUpperCase()}</div>
+          <div class="contact-info">
+            <div class="contact-name">${c.name||'—'}</div>
+            <div class="contact-role">${c.role||''}</div>
+            <div class="contact-links">
+              ${c.phone?`<a class="contact-link" href="tel:${c.phone}">${c.phone}</a>`:''}
+              ${c.email?`<a class="contact-link" href="mailto:${c.email}">${c.email}</a>`:''}
+            </div>
+          </div>
+        </div>`).join('')
+    : '<div style="font-size:12px;color:var(--text3);padding:8px 0">Yetkili kaydı yok.</div>';
+
+  const ciroRows = sortedCiro.map(c=>`
+    <tr>
+      <td>${MONTHS[c.month-1]} ${c.year}</td>
+      <td style="text-align:right">${c.qty != null ? c.qty + ' adet' : '—'}</td>
+      <td>
+        ${formatUSD(c.amount)}
+        <div class="ciro-bar"><div class="ciro-fill" style="width:${Math.round(c.amount/maxC*100)}%"></div></div>
+      </td>
+    </tr>`).join('');
+
+  const txRows = sortedTx.length
+    ? sortedTx.map((t,i)=>`
+      <tr>
+        <td>${formatDate(t.date)}</td>
+        <td><span class="tx-type ${t.type==='sale'?'tx-sale':'tx-payment'}">${t.type==='sale'?'Mal Satışı':'Tahsilat'}</span></td>
+        <td style="font-size:11px;color:var(--text3)">${t.note||'—'}</td>
+        <td class="${t.type==='sale'?'tx-amount-neg':'tx-amount-pos'}">${t.type==='sale'?'-':'+'}${formatUSD(t.amount)}</td>
+        <td style="white-space:nowrap">
+          <button onclick="editTx(${s.id},${i})" style="background:none;border:none;cursor:pointer;color:var(--text3);padding:2px 5px;border-radius:3px;font-size:10px" title="Düzenle">✏️</button>
+          <button onclick="deleteTx(${s.id},${i})" style="background:none;border:none;cursor:pointer;color:var(--red);padding:2px 5px;border-radius:3px;font-size:10px" title="Sil">🗑</button>
+        </td>
+      </tr>`).join('')
+    : '';
+
+  const visitEntries = sortedVisits.length
+    ? sortedVisits.map((v,i)=>`
+        <div class="visit-entry">
+          <div class="visit-date-col">${formatDate(v.date)}</div>
+          <div class="visit-note-col" style="flex:1">${v.note||'Not girilmedi.'}</div>
+          <div style="display:flex;gap:3px;flex-shrink:0">
+            <button onclick="editVisit(${s.id},${i})" style="background:none;border:none;cursor:pointer;color:var(--text3);padding:2px 4px;border-radius:3px;font-size:11px" title="Düzenle">✏️</button>
+            <button onclick="deleteVisit(${s.id},${i})" style="background:none;border:none;cursor:pointer;color:var(--red);padding:2px 4px;border-radius:3px;font-size:11px" title="Sil">🗑</button>
+          </div>
+        </div>`).join('')
+    : '<div style="font-size:12px;color:var(--text3);padding:8px 0">Henüz ziyaret kaydı yok.</div>';
+
+  const balCls = computedBalance(s) < 0 ? 'negative' : 'positive';
+
+  document.getElementById('detailPanel').innerHTML = `
+    <div class="dp-header">
+      <div class="dp-type-bar" style="background:${typeColor}"></div>
+      <div>
+        <div class="dp-name">${s.name}</div>
+        <div class="dp-city">${s.city}${s.district?', '+s.district:''} · ${s.type==='magaza'?'Mağaza':'Satış Noktası'}</div>
+      </div>
+      <button class="dp-close" onclick="closeDetail()">×</button>
+    </div>
+    <div class="dp-body">
+
+      <div>
+        <div class="dp-section-title">Yetkili Kişiler</div>
+        <div class="contacts-list">${contactsHtml}</div>
+      </div>
+
+      <div>
+        <div class="dp-section-title">Konum</div>
+        <div class="info-grid">
+          <div class="info-item full"><div class="info-label">Adres</div>
+            <div class="info-val">${s.address}
+              ${s.mapLink?`<br><a href="${s.mapLink}" target="_blank" style="font-size:10px;display:inline-flex;align-items:center;gap:4px;margin-top:4px;color:var(--blue)">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                Haritada Aç</a>`:''}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="dp-section-title" style="display:flex;align-items:center;justify-content:space-between">
+          Finansal Durum
+          <button class="btn btn-ghost" style="padding:3px 10px;font-size:10px" onclick="openTxModal(${s.id})">+ İşlem Ekle</button>
+        </div>
+        <div class="info-grid" style="margin-bottom:12px">
+          <div class="info-item full"><div class="info-label">Güncel Bakiye</div><div class="info-val mono ${balCls}">${formatUSD(computedBalance(s))}</div></div>
+        </div>
+        ${sortedTx.length ? `<table class="tx-table">
+          <thead><tr><th>Tarih</th><th>Tür</th><th>Açıklama</th><th>Tutar</th><th></th></tr></thead>
+          <tbody>${txRows}</tbody>
+        </table>` : '<div style="font-size:12px;color:var(--text3)">Henüz işlem kaydı yok.</div>'}
+      </div>
+
+      <div>
+        <div class="dp-section-title" style="display:flex;align-items:center;justify-content:space-between">
+          Aylık Ciro
+          <button class="btn btn-ghost" style="padding:3px 10px;font-size:10px" onclick="openCiroModal(${s.id})">+ Ciro Ekle</button>
+        </div>
+        ${sortedCiro.length ? `<table class="ciro-table">
+          <thead><tr><th>Dönem</th><th>Adet</th><th>Ciro (USD)</th></tr></thead>
+          <tbody>${ciroRows}</tbody>
+        </table>` : '<div style="font-size:12px;color:var(--text3)">Henüz ciro girişi yok.</div>'}
+      </div>
+
+      <div>
+        <div class="dp-section-title" style="display:flex;align-items:center;justify-content:space-between">
+          Ziyaret Geçmişi
+          <button class="btn btn-ghost" style="padding:3px 10px;font-size:10px" onclick="openVisitModal(${s.id})">+ Ziyaret</button>
+        </div>
+        <div class="visit-log">${visitEntries}</div>
+      </div>
+
+      <div>
+        <div class="dp-section-title">Notlar</div>
+        <div class="note-box">${s.notes||''}</div>
+      </div>
+
+    </div>
+    <div class="dp-footer">
+      <button class="btn btn-ghost" onclick="openEdit(${s.id})">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Düzenle
+      </button>
+      <button class="btn btn-ghost" onclick="openVisitModal(${s.id})" style="color:var(--green);border-color:var(--green)44">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Ziyaret Kaydet
+      </button>
+      <button class="btn btn-ghost" onclick="openTxModal(${s.id})" style="color:var(--blue);border-color:var(--blue)44">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        İşlem Ekle
+      </button>
+      <button class="btn" onclick="deleteStore(${s.id})" style="margin-left:auto;background:var(--red-pale);color:var(--red);border:1px solid var(--red)33">Sil</button>
+    </div>`;
+
+  document.getElementById('detailOverlay').style.display = 'flex';
+}
+function closeDetail() {
+  document.getElementById('detailOverlay').style.display = 'none';
+  detailId = null;
+}
+document.getElementById('detailOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('detailOverlay')) closeDetail();
+});
+
+// ── CONTACTS EDITOR ──────────────────────────────────────────────────────────
+let contactRows = [];
+
+function addContactRow(data) {
+  const idx = contactRows.length;
+  const d = data || {name:'',role:'',phone:'',email:''};
+  contactRows.push(d);
+  const editor = document.getElementById('contactsEditor');
+  const row = document.createElement('div');
+  row.className = 'contact-row';
+  row.dataset.idx = idx;
+  row.innerHTML = `
+    <div class="contact-row-fields">
+      <div class="field"><div class="field-label">Ad Soyad</div><input placeholder="Ad Soyad" value="${d.name}" oninput="contactRows[${idx}].name=this.value"></div>
+      <div class="field"><div class="field-label">Unvan / Rol</div><input placeholder="Müdür, Sahip…" value="${d.role}" oninput="contactRows[${idx}].role=this.value"></div>
+      <div class="contact-row-bottom">
+        <div class="field"><div class="field-label">Telefon</div><input placeholder="+90 5xx" value="${d.phone}" oninput="contactRows[${idx}].phone=this.value"></div>
+        <div class="field"><div class="field-label">E-posta</div><input placeholder="ornek@firma.com" value="${d.email}" oninput="contactRows[${idx}].email=this.value"></div>
+      </div>
+    </div>
+    <button class="remove-contact-btn" onclick="removeContactRow(${idx},this)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+    </button>`;
+  editor.appendChild(row);
+}
+
+function removeContactRow(idx, btn) {
+  contactRows[idx] = null;
+  btn.closest('.contact-row').remove();
+}
+
+// ── ADD / EDIT MODAL ──────────────────────────────────────────────────────────
+function openAdd() {
+  editingId = null;
+  contactRows = [];
+  document.getElementById('contactsEditor').innerHTML = '';
+  document.getElementById('modalTitle').textContent = 'Yeni Nokta Ekle';
+  ['fName','fAddress','fMapLink','fNotes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fBalance').value = '0';
+  document.getElementById('fType').value    = 'magaza';
+  document.getElementById('modalError').classList.remove('show');
+  populateCityDropdown();
+  updateDistricts();
+  document.getElementById('modalOverlay').style.display = 'flex';
+  document.getElementById('fName').focus();
+}
+function openEdit(id) {
+  const s = stores.find(x=>x.id===id);
+  if (!s) return;
+  editingId = id;
+  contactRows = [];
+  document.getElementById('contactsEditor').innerHTML = '';
+  document.getElementById('modalTitle').textContent = 'Noktayı Düzenle';
+  document.getElementById('fName').value     = s.name;
+  document.getElementById('fType').value     = s.type;
+  document.getElementById('fAddress').value  = s.address;
+  document.getElementById('fBalance').value  = s.balance;
+  document.getElementById('fMapLink').value  = s.mapLink||'';
+  document.getElementById('fNotes').value    = s.notes||'';
+  populateCityDropdown();
+  document.getElementById('fCity').value = s.city||'';
+  updateDistricts(s.district||'');
+  (s.contacts||[]).forEach(c => addContactRow({...c}));
+  document.getElementById('modalError').classList.remove('show');
+  document.getElementById('modalOverlay').style.display = 'flex';
+}
+function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; editingId = null; }
+
+document.getElementById('addBtn').addEventListener('click', openAdd);
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+// Dışarı tıklanınca kapanma devre dışı — sadece X veya İptal ile kapanır
+
+document.getElementById('saveBtn').addEventListener('click', ()=>{
+  const name    = document.getElementById('fName').value.trim();
+  const city    = document.getElementById('fCity').value.trim();
+  const address = document.getElementById('fAddress').value.trim();
+  if (!name || !city || !address) { document.getElementById('modalError').classList.add('show'); return; }
+
+  const contacts = contactRows.filter(c=>c&&c.name.trim());
+
+  const data = {
+    name, city,
+    type:     document.getElementById('fType').value,
+    district: document.getElementById('fDistrict').value.trim(),
+    address,
+    contacts,
+    balance:  parseFloat(document.getElementById('fBalance').value)||0,
+    mapLink:  document.getElementById('fMapLink').value.trim(),
+    notes:    document.getElementById('fNotes').value.trim(),
+  };
+
+  if (editingId !== null) {
+    const s = stores.find(x=>x.id===editingId);
+    Object.assign(s, data);
+    if (detailId === editingId) openDetail(editingId);
+  } else {
+    const initialBalance = parseFloat(document.getElementById('fBalance').value)||0;
+    const initTxs = [];
+    if (initialBalance !== 0) {
+      // Pozitif bakiye = müşteri alacağı var (bizden borçlu) → sale transaction
+      // Negatif bakiye = biz alacaklı değiliz → payment transaction
+      if (initialBalance > 0) {
+        initTxs.push({ date: new Date().toISOString().split('T')[0], type:'sale', amount: initialBalance, note:'Açılış bakiyesi' });
+      } else {
+        initTxs.push({ date: new Date().toISOString().split('T')[0], type:'payment', amount: Math.abs(initialBalance), note:'Açılış bakiyesi (alacaklı)' });
+      }
+    }
+    stores.push({ id:nextId++, ...data, visits:[], ciro:[], transactions: initTxs });
+  }
+  closeModal(); render();
+});
+
+// ── VISIT MODAL ───────────────────────────────────────────────────────────────
+function openVisitModal(id) {
+  visitingId = id;
+  visitEditIdx = null;
+  const s = stores.find(x=>x.id===id);
+  document.getElementById('visitModalTitle').textContent = `Ziyaret: ${s.name}`;
+  document.getElementById('vDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('vNote').value = '';
+  document.getElementById('visitModal').style.display = 'flex';
+}
+function closeVisitModal() { document.getElementById('visitModal').style.display='none'; visitingId=null; visitEditIdx=null; }
+document.getElementById('visitClose').addEventListener('click', closeVisitModal);
+document.getElementById('visitCancel').addEventListener('click', closeVisitModal);
+// visitModal dışarı tıklama devre dışı
+document.getElementById('visitSave').addEventListener('click',()=>{
+  const date = document.getElementById('vDate').value;
+  if (!date) return;
+  const s = stores.find(x=>x.id===visitingId);
+  const note = document.getElementById('vNote').value.trim();
+  if (visitEditIdx !== null) {
+    s.visits[visitEditIdx] = { date, note };
+  } else {
+    s.visits.push({ date, note });
+  }
+  closeVisitModal();
+  // Madde 5: instant state update
+  if (detailId === visitingId) openDetail(visitingId);
+  render();
+});
+
+// ── CIRO MODAL ────────────────────────────────────────────────────────────────
+function openCiroModal(id) {
+  ciroingId = id;
+  ciroEditIdx = null;
+  const s = stores.find(x=>x.id===id);
+  const now = new Date();
+  document.getElementById('ciroModalTitle').textContent = `Ciro: ${s.name}`;
+  document.getElementById('ciroMonth').value  = now.getMonth()+1;
+  document.getElementById('ciroYear').value   = now.getFullYear();
+  document.getElementById('ciroAmount').value = '';
+  document.getElementById('ciroQty').value    = '';
+  document.getElementById('ciroFormLabel').textContent = 'Yeni Kayıt Ekle';
+  document.getElementById('ciroEditHint').style.display = 'none';
+
+  // Show existing ciro entries for editing
+  const existing = (s.ciro||[]).slice().sort((a,b)=>b.year!==a.year?b.year-a.year:b.month-a.month);
+  const wrap = document.getElementById('ciroExistingWrap');
+  const list = document.getElementById('ciroExistingList');
+  if (existing.length) {
+    wrap.style.display = '';
+    list.innerHTML = existing.map((c,i)=>`
+      <div style="display:flex;align-items:center;gap:8px;background:var(--surface2);border-radius:5px;padding:7px 10px">
+        <span style="font-size:12px;flex:1;color:var(--text)">${MONTHS[c.month-1]} ${c.year}</span>
+        <span style="font-size:12px;color:var(--text2)">${formatUSD(c.amount)}${c.qty?' · '+c.qty+' adet':''}</span>
+        <button onclick="ciroLoadEdit(${i})" style="background:none;border:none;cursor:pointer;color:var(--text3);padding:2px 5px;font-size:10px;border-radius:3px" title="Düzenle">✏️</button>
+        <button onclick="ciroDeleteEntry(${i})" style="background:none;border:none;cursor:pointer;color:var(--red);padding:2px 5px;font-size:10px;border-radius:3px" title="Sil">🗑</button>
+      </div>`).join('');
+  } else {
+    wrap.style.display = 'none';
+  }
+  document.getElementById('ciroModal').style.display = 'flex';
+}
+function ciroLoadEdit(sortedIdx) {
+  const s = stores.find(x=>x.id===ciroingId);
+  const sorted = (s.ciro||[]).slice().sort((a,b)=>b.year!==a.year?b.year-a.year:b.month-a.month);
+  const c = sorted[sortedIdx];
+  const realIdx = s.ciro.indexOf(c);
+  ciroEditIdx = realIdx;
+  document.getElementById('ciroMonth').value  = c.month;
+  document.getElementById('ciroYear').value   = c.year;
+  document.getElementById('ciroAmount').value = c.amount;
+  document.getElementById('ciroQty').value    = c.qty||'';
+  document.getElementById('ciroFormLabel').textContent = `${MONTHS[c.month-1]} ${c.year} — Düzenle`;
+  document.getElementById('ciroEditHint').style.display = '';
+}
+function ciroDeleteEntry(sortedIdx) {
+  if (!confirm('Bu ciro kaydını silmek istediğinizden emin misiniz?')) return;
+  const s = stores.find(x=>x.id===ciroingId);
+  const sorted = (s.ciro||[]).slice().sort((a,b)=>b.year!==a.year?b.year-a.year:b.month-a.month);
+  const c = sorted[sortedIdx];
+  const realIdx = s.ciro.indexOf(c);
+  s.ciro.splice(realIdx,1);
+  if (detailId === ciroingId) openDetail(ciroingId);
+  render();
+  openCiroModal(ciroingId); // reopen to refresh list
+}
+document.getElementById('ciroEditCancel').addEventListener('click',()=>{
+  ciroEditIdx = null;
+  document.getElementById('ciroAmount').value = '';
+  document.getElementById('ciroQty').value = '';
+  document.getElementById('ciroFormLabel').textContent = 'Yeni Kayıt Ekle';
+  document.getElementById('ciroEditHint').style.display = 'none';
+});
+function closeCiroModal() { document.getElementById('ciroModal').style.display='none'; ciroingId=null; ciroEditIdx=null; }
+document.getElementById('ciroClose').addEventListener('click', closeCiroModal);
+document.getElementById('ciroCancel').addEventListener('click', closeCiroModal);
+// ciroModal dışarı tıklama devre dışı
+document.getElementById('ciroSave').addEventListener('click',()=>{
+  const amount = parseFloat(document.getElementById('ciroAmount').value);
+  if (!amount || amount < 0) return;
+  const qty   = parseInt(document.getElementById('ciroQty').value)||null;
+  const month = parseInt(document.getElementById('ciroMonth').value);
+  const year  = parseInt(document.getElementById('ciroYear').value);
+  const s = stores.find(x=>x.id===ciroingId);
+  if (!s.ciro) s.ciro = [];
+  if (ciroEditIdx !== null) {
+    s.ciro[ciroEditIdx] = { month, year, amount, qty };
+  } else {
+    const existing = s.ciro.find(c=>c.month===month&&c.year===year);
+    if (existing) { existing.amount = amount; existing.qty = qty; }
+    else s.ciro.push({ month, year, amount, qty });
+  }
+  closeCiroModal();
+  if (detailId === ciroingId) openDetail(ciroingId);
+  render();
+});
+
+// ── TRANSACTION MODAL (Mal Satışı / Tahsilat) ─────────────────────────────────
+function openTxModal(id) {
+  txingId = id;
+  txEditIdx = null;
+  const s = stores.find(x=>x.id===id);
+  document.getElementById('txModalTitle').textContent = `İşlem: ${s.name}`;
+  document.getElementById('txDate').value   = new Date().toISOString().split('T')[0];
+  document.getElementById('txAmount').value = '';
+  document.getElementById('txNote').value   = '';
+  document.getElementById('txType').value   = 'sale';
+  document.getElementById('txModal').style.display = 'flex';
+}
+function closeTxModal() { document.getElementById('txModal').style.display='none'; txingId=null; txEditIdx=null; }
+document.getElementById('txClose').addEventListener('click', closeTxModal);
+document.getElementById('txCancel').addEventListener('click', closeTxModal);
+// txModal dışarı tıklama devre dışı
+document.getElementById('txSave').addEventListener('click',()=>{
+  const amount = parseFloat(document.getElementById('txAmount').value);
+  if (!amount || amount <= 0) return;
+  const type   = document.getElementById('txType').value;
+  const date   = document.getElementById('txDate').value;
+  if (!date) return;
+  const note   = document.getElementById('txNote').value.trim();
+  const s = stores.find(x=>x.id===txingId);
+  if (!s.transactions) s.transactions = [];
+
+  if (txEditIdx !== null) {
+    // Edit existing transaction
+    s.transactions[txEditIdx] = { date, type, amount, note };
+  } else {
+    s.transactions.push({ date, type, amount, note });
+  }
+  // Madde 5: instant UI update — recompute balance from transactions (no stored balance needed)
+  closeTxModal();
+  if (detailId === txingId) openDetail(txingId);
+  render();
+});
+
+// ── TX EDIT / DELETE ──────────────────────────────────────────────────────────
+function editTx(storeId, txIdx) {
+  const s = stores.find(x=>x.id===storeId);
+  if (!s || !s.transactions[txIdx]) return;
+  const t = s.transactions[txIdx];
+  txingId = storeId;
+  txEditIdx = txIdx;
+  document.getElementById('txModalTitle').textContent = `İşlemi Düzenle: ${s.name}`;
+  document.getElementById('txDate').value   = t.date;
+  document.getElementById('txAmount').value = t.amount;
+  document.getElementById('txNote').value   = t.note||'';
+  document.getElementById('txType').value   = t.type;
+  document.getElementById('txModal').style.display = 'flex';
+}
+function deleteTx(storeId, txIdx) {
+  if (!confirm('Bu işlemi silmek istediğinizden emin misiniz?')) return;
+  const s = stores.find(x=>x.id===storeId);
+  if (!s) return;
+  s.transactions.splice(txIdx, 1);
+  if (detailId === storeId) openDetail(storeId);
+  render();
+}
+
+// ── VISIT EDIT / DELETE ───────────────────────────────────────────────────────
+function editVisit(storeId, visitIdx) {
+  const s = stores.find(x=>x.id===storeId);
+  if (!s) return;
+  // Sort matches openDetail sort order
+  const sorted = s.visits.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const v = sorted[visitIdx];
+  const realIdx = s.visits.indexOf(v);
+  visitingId  = storeId;
+  visitEditIdx = realIdx;
+  document.getElementById('visitModalTitle').textContent = `Ziyareti Düzenle: ${s.name}`;
+  document.getElementById('vDate').value = v.date;
+  document.getElementById('vNote').value = v.note||'';
+  document.getElementById('visitModal').style.display = 'flex';
+}
+function deleteVisit(storeId, visitIdx) {
+  if (!confirm('Bu ziyaret kaydını silmek istediğinizden emin misiniz?')) return;
+  const s = stores.find(x=>x.id===storeId);
+  if (!s) return;
+  const sorted = s.visits.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const v = sorted[visitIdx];
+  const realIdx = s.visits.indexOf(v);
+  s.visits.splice(realIdx, 1);
+  if (detailId === storeId) openDetail(storeId);
+  render();
+}
+
+// ── DELETE ────────────────────────────────────────────────────────────────────
+function deleteStore(id) {
+  if (!confirm('Bu noktayı silmek istediğinizden emin misiniz?')) return;
+  stores = stores.filter(x=>x.id!==id);
+  closeDetail(); render();
+}
+
+// ── PAGE NAVIGATION ──────────────────────────────────────────────────────────
+function setPage(page) {
+  activePage = page;
+  ['noktalar','ziyaretler','bakiye'].forEach(p => {
+    document.getElementById('page' + p.charAt(0).toUpperCase() + p.slice(1)).style.display = p === page ? '' : 'none';
+    const navEl = document.getElementById('nav' + p.charAt(0).toUpperCase() + p.slice(1));
+    if (navEl) navEl.classList.toggle('active', p === page);
+  });
+  const titles = { noktalar: 'Mağazalar ve Satış Noktaları', ziyaretler: 'Ziyaretler', bakiye: 'Güncel Bakiye' };
+  document.getElementById('topbarTitle').textContent = titles[page];
+  document.getElementById('topbarSub').textContent = '';
+  render();
+}
+function setView(e) { /* legacy compat - unused */ }
+function filterType(t) { /* legacy compat - unused */ }
+function toggleFilter(f) { /* legacy compat - unused */ }
+document.getElementById('searchInput').addEventListener('input', e=>{
+  searchQ = e.target.value;
+  render();
+});
+
+// ── EXCEL ─────────────────────────────────────────────────────────────────────
+document.getElementById('excelBtn').addEventListener('click',()=>{
+  const rows = [
+    ['İsim','Tür','Şehir','İlçe','Adres','Yetkili 1','Unvan 1','Telefon 1','Yetkili 2','Unvan 2','Bakiye (USD)','Son Ziyaret','Harita'],
+    ...stores.map(s=>{
+      const c1 = s.contacts&&s.contacts[0]||{};
+      const c2 = s.contacts&&s.contacts[1]||{};
+      return [
+        s.name, s.type==='magaza'?'Mağaza':'Satış Noktası',
+        s.city, s.district||'', s.address,
+        c1.name||'', c1.role||'', c1.phone||'',
+        c2.name||'', c2.role||'',
+        s.balance,
+        lastVisitDate(s)||'Ziyaret yok', s.mapLink||''
+      ];
+    })
+  ];
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:24},{wch:14},{wch:12},{wch:12},{wch:36},{wch:18},{wch:16},{wch:18},{wch:18},{wch:16},{wch:14},{wch:16},{wch:40}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Noktalar');
+  XLSX.writeFile(wb, 'SinaPirlanta_BolgeMuduru.xlsx');
+});
+
+// ── MOBILE ────────────────────────────────────────────────────────────────────
+document.getElementById('hamburger').addEventListener('click',()=>{
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('mobBackdrop').classList.toggle('open');
+});
+document.getElementById('mobBackdrop').addEventListener('click',()=>{
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('mobBackdrop').classList.remove('open');
+});
+
+// ── JSON EXPORT ───────────────────────────────────────────────────────────────
+document.getElementById('jsonExportBtn').addEventListener('click',()=>{
+  const payload = { version: 1, exportedAt: new Date().toISOString(), nextId, stores };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `SinaPirlanta_Veriler_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// ── JSON IMPORT ───────────────────────────────────────────────────────────────
+document.getElementById('jsonImportInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data.stores || !Array.isArray(data.stores)) {
+        alert('Geçersiz JSON dosyası. stores dizisi bulunamadı.');
+        return;
+      }
+      if (!confirm(`${data.stores.length} nokta yüklenecek. Mevcut veriler silinecek. Devam edilsin mi?`)) return;
+      stores = data.stores;
+      nextId = data.nextId || (Math.max(...stores.map(s=>s.id), 0) + 1);
+      expandedCities = new Set();
+      populateCityFilter();
+      render();
+      alert('Veriler başarıyla yüklendi!');
+    } catch(err) {
+      alert('JSON dosyası okunamadı: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+// ── SIFIRLAMA ─────────────────────────────────────────────────────────────────
+function openResetPanel() {
+  document.getElementById('resetModal').style.display = 'flex';
+}
+function resetVisits() {
+  const total = stores.reduce((s,x)=>s+(x.visits||[]).length, 0);
+  if (!confirm(`Tüm noktalardaki ${total} ziyaret kaydı silinecek. Devam edilsin mi?`)) return;
+  stores.forEach(s => s.visits = []);
+  document.getElementById('resetModal').style.display = 'none';
+  render();
+}
+function resetTransactions() {
+  const total = stores.reduce((s,x)=>s+(x.transactions||[]).length, 0);
+  if (!confirm(`Tüm noktalardaki ${total} bakiye işlemi silinecek. Devam edilsin mi?`)) return;
+  stores.forEach(s => s.transactions = []);
+  document.getElementById('resetModal').style.display = 'none';
+  render();
+}
+function resetCiro() {
+  const total = stores.reduce((s,x)=>s+(x.ciro||[]).length, 0);
+  if (!confirm(`Tüm noktalardaki ${total} ciro kaydı silinecek. Devam edilsin mi?`)) return;
+  stores.forEach(s => s.ciro = []);
+  document.getElementById('resetModal').style.display = 'none';
+  render();
+}
+function resetAll() {
+  if (!confirm(`DİKKAT: Tüm ${stores.length} nokta ve tüm verileri kalıcı olarak silinecek. Bu işlem geri alınamaz. Devam edilsin mi?`)) return;
+  stores = [];
+  nextId = 1;
+  expandedCities = new Set();
+  closeDetail();
+  document.getElementById('resetModal').style.display = 'none';
+  populateCityFilter();
+  render();
+}
+
+render();
+
+// ── type="module" ile inline onclick'ler için window'a aktar ──────────────────
+Object.assign(window, {
+  setPage, openDetail, closeDetail,
+  openAdd, closeModal,
+  openVisitModal, closeVisitModal,
+  openCiroModal, closeCiroModal,
+  openTxModal, closeTxModal,
+  openResetPanel, resetVisits, resetTransactions, resetCiro, resetAll,
+  editTx, deleteTx, editVisit, deleteVisit, deleteStore,
+  cycleSortBalance, cycleSortVisit,
+  toggleCity, updateDistricts,
+  setView, filterType, toggleFilter
+});
+</script>
+</body>
+</html>
