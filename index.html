@@ -1134,7 +1134,8 @@ function filteredStores() {
     return true;
   });
 
-  // Sorting
+  // Sıralama aktifse sadece o kritere göre, filtre yoksa mağazalar önce satış noktaları sonra
+  const typeOrder = t => t === 'magaza' ? 0 : 1;
   if (sortBalance !== null) {
     result = result.slice().sort((a,b) => {
       const diff = computedBalance(a) - computedBalance(b);
@@ -1146,6 +1147,8 @@ function filteredStores() {
       const db = lastVisitDate(b) || '0000-00-00';
       return sortVisit === 'asc' ? da.localeCompare(db) : db.localeCompare(da);
     });
+  } else {
+    result = result.slice().sort((a,b) => typeOrder(a.type) - typeOrder(b.type));
   }
   return result;
 }
@@ -1222,7 +1225,10 @@ function renderGrid() {
   if (cities.length === 1 || searchQ) cities.forEach(c => expandedCities.add(c));
 
   grid.innerHTML = cities.map(city => {
-    const cityStores = cityMap[city];
+    const cityStores = cityMap[city].slice().sort((a,b) => {
+      const typeOrder = t => t === 'magaza' ? 0 : 1;
+      return typeOrder(a.type) - typeOrder(b.type);
+    });
     const isOpen = expandedCities.has(city);
     const negCount = cityStores.filter(s=>computedBalance(s)<0).length;
     const overdueCount = cityStores.filter(s=>visitStatus(s)==='red').length;
@@ -1603,15 +1609,38 @@ function openAdd() {
   contactRows = [];
   document.getElementById('contactsEditor').innerHTML = '';
   document.getElementById('modalTitle').textContent = 'Yeni Nokta Ekle';
-  ['fName','fAddress','fMapLink','fNotes'].forEach(id=>document.getElementById(id).value='');
+  ['fAddress','fMapLink','fNotes'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fBalance').value = '0';
   document.getElementById('fType').value    = 'magaza';
+  document.getElementById('fName').value    = 'Sina Pırlanta ';
   document.getElementById('modalError').classList.remove('show');
   populateCityDropdown();
   updateDistricts();
   document.getElementById('modalOverlay').style.display = 'flex';
-  document.getElementById('fName').focus();
+  const fName = document.getElementById('fName');
+  fName.focus();
+  fName.setSelectionRange(fName.value.length, fName.value.length);
 }
+
+// Tür değişince isim alanını güncelle (sadece yeni ekleme modunda)
+document.getElementById('fType').addEventListener('change', function() {
+  if (editingId !== null) return; // düzenleme modunda dokunma
+  const fName = document.getElementById('fName');
+  if (this.value === 'magaza') {
+    // Eğer alan boşsa veya sadece prefix varsa prefix koy
+    if (!fName.value.trim() || fName.value === '') {
+      fName.value = 'Sina Pırlanta ';
+      fName.focus();
+      fName.setSelectionRange(fName.value.length, fName.value.length);
+    }
+  } else {
+    // Satış noktasına geçince eğer sadece prefix varsa temizle
+    if (fName.value === 'Sina Pırlanta ' || fName.value === 'Sina Pırlanta') {
+      fName.value = '';
+    }
+    fName.focus();
+  }
+});
 function openEdit(id) {
   const s = stores.find(x=>x.id===id);
   if (!s) return;
@@ -1914,9 +1943,13 @@ document.getElementById('searchInput').addEventListener('input', e=>{
 
 // ── EXCEL ─────────────────────────────────────────────────────────────────────
 document.getElementById('excelBtn').addEventListener('click',()=>{
+  const sortedStores = stores.slice().sort((a,b) => {
+    const typeOrder = t => t === 'magaza' ? 0 : 1;
+    return typeOrder(a.type) - typeOrder(b.type);
+  });
   const rows = [
     ['İsim','Tür','Şehir','İlçe','Adres','Yetkili 1','Unvan 1','Telefon 1','Yetkili 2','Unvan 2','Telefon 2','Güncel Bakiye (USD)','Son Ziyaret','Son Ziyaretten Bu Yana (Gün)','Durum','Harita Linki'],
-    ...stores.map(s=>{
+    ...sortedStores.map(s=>{
       const c1 = s.contacts&&s.contacts[0]||{};
       const c2 = s.contacts&&s.contacts[1]||{};
       const bal = computedBalance(s);
@@ -2001,14 +2034,8 @@ function updatePdfPreview() {
   document.getElementById('pdfPreviewCount').textContent = `Filtreye uyan ${list.length} nokta rapora dahil edilecek.`;
 }
 
-function generatePDF() {
-  const list = getPdfFilteredStores();
-  if (!list.length) { alert('Filtreye uyan nokta bulunamadı.'); return; }
-
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('tr-TR',{day:'2-digit',month:'long',year:'numeric'});
-
-  const rows = list.map(s => {
+function buildPdfRows(subList) {
+  return subList.map(s => {
     const bal = computedBalance(s);
     const lvd = lastVisitDate(s);
     const d   = lvd ? daysSince(lvd) : null;
@@ -2029,7 +2056,37 @@ function generatePDF() {
       <td class="visit-cell">${lvd?formatDate(lvd)+'<br><small style="color:#7a5f56">'+d+' gün önce</small>':'<span style="color:#b09388">Ziyaret yok</span>'}</td>
       <td style="text-align:center"><span class="status-badge ${vsClass}">${vsLabel}</span></td>
     </tr>`;
-  });
+  }).join('');
+}
+
+function buildPdfTable(subList) {
+  if (!subList.length) return '<div style="font-size:11px;color:#b09388;padding:8px 0">Bu kategoride kayıt yok.</div>';
+  return `<table>
+    <thead><tr>
+      <th style="min-width:160px">Nokta Adı</th>
+      <th>Tür</th>
+      <th>Şehir / İlçe</th>
+      <th>Yetkili Kişi</th>
+      <th style="text-align:right">Güncel Bakiye</th>
+      <th style="text-align:center">Son Ziyaret</th>
+      <th style="text-align:center">Durum</th>
+    </tr></thead>
+    <tbody>${buildPdfRows(subList)}</tbody>
+  </table>`;
+}
+
+function generatePDF() {
+  const list = getPdfFilteredStores();
+  if (!list.length) { alert('Filtreye uyan nokta bulunamadı.'); return; }
+
+  const pdfTypeFilter = document.getElementById('pdfTypeFilter').value;
+  const isTwoSection = (pdfTypeFilter === 'all');
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('tr-TR',{day:'2-digit',month:'long',year:'numeric'});
+
+  const magazalar   = list.filter(s => s.type === 'magaza');
+  const satislar    = list.filter(s => s.type === 'satis-noktasi');
 
   const totalBal = list.reduce((s,x)=>s+computedBalance(x),0);
   const totalBalStr = totalBal < 0 ? `-$${Math.abs(totalBal).toLocaleString('tr-TR',{minimumFractionDigits:0})}` : `$${totalBal.toLocaleString('tr-TR',{minimumFractionDigits:0})}`;
@@ -2202,21 +2259,24 @@ td.name-cell{font-weight:600;color:#2a1f1a}
 
 <!-- TABLO -->
 <div class="content">
+  ${isTwoSection ? `
+  <!-- Mağazalar Bölümü -->
+  <div class="section-label" style="margin-bottom:6px;margin-top:14px;color:#c4748a">
+    🏪 Mağazalar
+    <span style="font-size:10px;font-weight:300;color:#7a5f56;margin-left:8px">${magazalar.length} adet</span>
+  </div>
+  ${buildPdfTable(magazalar)}
+
+  <!-- Satış Noktaları Bölümü -->
+  <div class="section-label" style="margin-bottom:6px;margin-top:22px;color:#5a82b4">
+    📍 Satış Noktaları
+    <span style="font-size:10px;font-weight:300;color:#7a5f56;margin-left:8px">${satislar.length} adet</span>
+  </div>
+  ${buildPdfTable(satislar)}
+  ` : `
   <div class="section-label" style="margin-bottom:0;margin-top:14px">Nokta Detayları</div>
-  <table>
-    <thead>
-      <tr>
-        <th style="min-width:160px">Nokta Adı</th>
-        <th>Tür</th>
-        <th>Şehir / İlçe</th>
-        <th>Yetkili Kişi</th>
-        <th style="text-align:right">Güncel Bakiye</th>
-        <th style="text-align:center">Son Ziyaret</th>
-        <th style="text-align:center">Durum</th>
-      </tr>
-    </thead>
-    <tbody>${rows.join('')}</tbody>
-  </table>
+  ${buildPdfTable(list)}
+  `}
 </div>
 
 <!-- FOOTER -->
