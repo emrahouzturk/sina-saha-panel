@@ -889,11 +889,16 @@ DATA_REF.on('value', (snapshot) => {
     stores = [];
     nextId = 1;
   }
+  const isFirst = !_fbReady;
   _fbReady = true;
-  expandedCities = new Set();
-  populateCityFilter();
-  document.getElementById('loadingOverlay').style.display = 'none';
+  if (isFirst) {
+    expandedCities = new Set();
+    populateCityFilter();
+    document.getElementById('loadingOverlay').style.display = 'none';
+  }
   render();
+  // Açık detail paneli anlık güncelle
+  if (detailId !== null) openDetail(detailId);
 }, (error) => {
   setConnStatus(false);
   console.error('Firebase okuma hatası:', error);
